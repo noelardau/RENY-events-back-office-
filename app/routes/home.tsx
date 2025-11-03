@@ -1,5 +1,6 @@
+import { user } from "~/db/user";
 import type { Route } from "./+types/home";
-import { Welcome } from "../welcome/welcome";
+import { HeroContentLeft } from "~/components/HeroSectionBack";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -8,6 +9,13 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export default function Home() {
-  return <Welcome />;
+
+export async function loader({}: Route.LoaderArgs) {
+ 
+  return user;
+}
+
+export default function Home({loaderData}: Route.ComponentProps) {
+  return <HeroContentLeft isConnected={loaderData.isConnected}></HeroContentLeft>;
+
 }

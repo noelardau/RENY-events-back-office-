@@ -13,7 +13,7 @@ export function HeroContentLeft({isConnected}: {isConnected: boolean}) {
       <Container className={classes.container} size="md">
         <Title className={classes.title}>Back office de RENY Events</Title>
         <Text className={classes.description} size="xl" mt="xl">
-         Bienvenue sur votre back office. Connectez-vous pour gérer vos événements ainsi que les réservations.
+         Bienvenue sur votre back office. Gérer vos événements ainsi que les réservations à travers une interface simple et intuitive.
         </Text>
 
       {

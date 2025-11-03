@@ -26,8 +26,8 @@ export function LoginForm() {
     <Form method='POST'>
 
       <Paper withBorder shadow="sm" p={22} mt={30} radius="md">
-        <TextInput label="Nom d'utilisateur" name='username' placeholder="you@mantine.dev" required radius="md" />
-        <PasswordInput label="Mot de passe" name='password' placeholder="Your password" required mt="md" radius="md" />
+        <TextInput label="Nom d'utilisateur" name='username' placeholder="Votre nom d'utilisateur" required radius="md" />
+        <PasswordInput label="Mot de passe" name='password' placeholder="votre mot de passe" required mt="md" radius="md" />
         {/* <Group justify="space-between" mt="lg">
           <Checkbox label="Remember me" />
           <Anchor component="button" size="sm">

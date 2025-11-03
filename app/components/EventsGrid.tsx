@@ -1,5 +1,6 @@
 import { AspectRatio, Card, Container, Image, SimpleGrid, Text } from '@mantine/core';
 import classes from '../styles/EventsGrid.module.css';
+import { Link } from 'react-router';
 
 const mockdata = [
   {
@@ -30,6 +31,8 @@ const mockdata = [
 
 export function EventsGrid() {
   const cards = mockdata.map((article) => (
+     <Link to={'/event/1'} key={article.date} children={
+
     <Card key={article.title} p="md" radius="md" component="a" href="#" className={classes.card}>
       <AspectRatio ratio={1920 / 1080}>
         <Image src={article.image} radius="md" />
@@ -37,6 +40,9 @@ export function EventsGrid() {
       <Text className={classes.date}>{article.date}</Text>
       <Text className={classes.title}>{article.title}</Text>
     </Card>
+     }>
+       </Link> 
+
   ));
 
   return (

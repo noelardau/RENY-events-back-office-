@@ -4,9 +4,9 @@ import { EventsGrid } from "~/components/EventsGrid";
 
 export default function Evenements() {
   return (
-    <Container size="lg" my="md">
+    <Container size="md" p="100">
         
-        <EventsGrid/>
+      <h1>Event number one </h1>
 
     </Container>
   );

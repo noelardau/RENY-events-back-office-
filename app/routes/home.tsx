@@ -11,11 +11,13 @@ export function meta({}: Route.MetaArgs) {
 
 
 export async function loader({}: Route.LoaderArgs) {
+  
  
   return user;
 }
 
 export default function Home({loaderData}: Route.ComponentProps) {
+  
   return <HeroContentLeft isConnected={loaderData.isConnected}></HeroContentLeft>;
 
 }

@@ -1,6 +1,11 @@
+import { Select } from '@mantine/core';
 import React from 'react';
 
-export const TarifInput = ({ value, onChange }) => {
+export const TarifInput = ({ value, onChange}) => {
+const typesTarif = [
+  {id: 1, type:"VIP"}, {id:2, type:"GOLD"}
+]
+
   const handleChange = (index, field, newValue) => {
     const newTarifs = [...value];
     newTarifs[index] = {
@@ -11,6 +16,7 @@ export const TarifInput = ({ value, onChange }) => {
   };
 
   const addTarif = () => {
+    
     onChange([
       ...value,
       {
@@ -45,14 +51,23 @@ export const TarifInput = ({ value, onChange }) => {
               <label className="block text-sm font-medium text-gray-700">
                 Type de place
               </label>
-              <input
+                <select
+                id="type_evenement"
+                value={tarif.type_place}
+               onChange={(e) => handleChange(index, 'type_place', e.target.value)}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                required
+              >
+                {typesTarif.map(tt => <option key={tt.id} value={tt.id}>{tt.type}</option>)}
+              </select>
+              {/* <input
                 type="text"
                 value={tarif.type_place}
                 onChange={(e) => handleChange(index, 'type_place', e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 placeholder="Ex: Standard, VIP, Early Bird"
                 required
-              />
+              /> */}
             </div>
 
             <div>

@@ -20,7 +20,7 @@ export function AddMenu() {
       radius="md"
     >
       <Menu.Target>
-        <Button rightSection={<IconChevronDown size={18} stroke={1.5} />} pr={12} radius="xl">
+        <Button className="bg-indigo-800" rightSection={<IconChevronDown size={18} stroke={1.5} />} pr={12} radius="xl">
          <Text size='10px' visibleFrom='xs'> Menu</Text>
          <Text size='10px' hiddenFrom='xs'> ---</Text>
         </Button>

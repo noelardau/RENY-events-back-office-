@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
+import { Form, Link, useNavigate } from 'react-router';
 import { LieuInput } from './LieuInput';
 import { TarifInput } from './TarifInput';
 import { FileUpload } from './FileUpload';
@@ -20,7 +20,7 @@ export const NewEventForm = () => {
      
     },
     tarifs: [],
-    fichiers: []
+    fichiers: [],
   });
 
   const navigate = useNavigate();
@@ -52,7 +52,7 @@ export const NewEventForm = () => {
 
       const data = await response.json();
       console.log('Response:', data);
-      navigate('/admin');
+      navigate('/events');
     } catch (error) {
       console.error('Error submitting form:', error);
     }
@@ -110,12 +110,12 @@ export const NewEventForm = () => {
                 required
               >
                 <option value="">Sélectionnez un type</option>
-                <option value="Conference">Conférence</option>
-                <option value="Concert">Concert</option>
-                <option value="Foire">Concert</option>
-                <option value="spectacle">Spectacle</option>
-                <option value="exposition">Exposition</option>
-                <option value="autre">Autre</option>
+                <option value="1">Conférence</option>
+                <option value="2">Concert</option>
+                <option value="3">Concert</option>
+                <option value="4">Spectacle</option>
+                <option value="5">Exposition</option>
+                <option value="6">Autre</option>
               </select>
             </div>
 
@@ -157,7 +157,7 @@ export const NewEventForm = () => {
           <div className="border-t border-gray-200 pt-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Lieu de l'événement</h3>
             <LieuInput 
-              value={form.lieu}
+              value={form.lieu} 
               onChange={(lieu) => setForm(prev => ({ ...prev, lieu }))}
             />
           </div>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Burger, Button, Container, Group, Input } from '@mantine/core';
+import { Modal, Button, Container, Group, Input, Text } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import classes from '../styles//HeaderSimple.module.css';
 import { FiLogOut } from "react-icons/fi";
@@ -18,6 +18,7 @@ export function Header({isConnected}: {isConnected: boolean}) {
   const [active, setActive] = useState(links[0].link);
 
    const location = useLocation().pathname
+    const [openedModal, setOpened] = useState(false);
 
   const items = links.map((link) => (
     <a
@@ -36,6 +37,22 @@ export function Header({isConnected}: {isConnected: boolean}) {
 
   return (
     <header className={classes.header}>
+       <Modal
+              opened={openedModal}
+              onClose={() => setOpened(false)}
+              centered
+            >
+              <Text>Voulez-vous vraiment vous déconnecter ?</Text>
+              <Group justify="flex-end" mt="md">
+                <Button variant="subtle" onClick={() => setOpened(false)}>
+                  Annuler
+                </Button>
+                <Form method='POST' onClick={() => setOpened(false)}>
+                <Button type='submit'>Confirmer</Button>
+                </Form>
+              
+              </Group>
+            </Modal>
       <Container size="md" className={classes.inner}>
         
         <Link to="/" className={classes.title}>RENY Events <br /> <span className={classes.title_second}>Back office</span> </Link>
@@ -54,10 +71,9 @@ export function Header({isConnected}: {isConnected: boolean}) {
         //  <Group gap={3} visibleFrom="xs">
          <Group gap={3} >
           
-         <Form method='POST'>
           <AddMenu/>
-              <Button type='submit' color='none'><FiLogOut size={18} color='red' /></Button>
-         </Form>
+              <Button onClick={()=> setOpened(true)} color='none'><FiLogOut size={18} color='red' /></Button>
+         
         </Group> 
         : 
         null

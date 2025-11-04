@@ -6,6 +6,9 @@ import { useState } from 'react';
 import { ReservationForm } from './ReservationFrom';
 import { Link } from 'react-router';
 
+import { usePostReservation } from '~/hooks/postResa';
+
+
 const mockdata = {
   image:
     'https://images.unsplash.com/photo-1437719417032-8595fd9e9dc6?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&q=80',
@@ -34,6 +37,14 @@ export function SingleEventCard({event}) {
   //   </Badge>
   // ));
 
+  let {mutate, error, isPending} =  usePostReservation()
+
+let saveResa = (newResa)=>{
+
+  mutate(newResa)
+}
+
+
   return ( 
     <>
     <Modal
@@ -44,7 +55,7 @@ export function SingleEventCard({event}) {
       >
        <div>
 
-        <ReservationForm onSubmit={()=>console.log("oka!!")}/>
+        <ReservationForm evenement_id={event.evenement_id} onSubmit={saveResa}/>
 
        </div>
        

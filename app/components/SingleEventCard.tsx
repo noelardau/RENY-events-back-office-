@@ -23,16 +23,16 @@ const mockdata = {
 };
 
 
-export function SingleEventCard({idEvent}: {idEvent: number}) {
-  const { image, title, description, country, badges } = mockdata;
+export function SingleEventCard({event}) {
+  // const { image, title, description, country, badges } = mockdata;
 
   const [opened, setOpened] = useState(false);
 
-  const features = badges.map((badge) => (
-    <Badge variant="light" key={badge.label} leftSection={badge.emoji}>
-      {badge.label}
-    </Badge>
-  ));
+  // const features = badges.map((badge) => (
+  //   <Badge variant="light" key={badge.label} leftSection={badge.emoji}>
+  //     {badge.label}
+  //   </Badge>
+  // ));
 
   return ( 
     <>
@@ -51,20 +51,20 @@ export function SingleEventCard({idEvent}: {idEvent: number}) {
       </Modal>
     <Card withBorder radius="md" p="md" className={classes.card}>
       <Card.Section>
-        <Image src={image} alt={title} height={100} />
+        <Image alt={"title"} height={100} />
       </Card.Section>
 
       <Card.Section className={classes.section} mt="md">
         <Group justify="apart">
           <Text fz="lg" fw={500}>
-            {title}
+            {event.titre}
           </Text>
           <Badge size="sm" variant="light">
-            {country}
+            {event.type_evenement.type_evenement_nom}
           </Badge>
         </Group>
         <Text fz="sm" mt="xs">
-          {description}
+          {event.description_evenement}
         </Text>
       </Card.Section>
 
@@ -77,7 +77,7 @@ export function SingleEventCard({idEvent}: {idEvent: number}) {
           Faire une réservation
         </Button>
         <Button radius="md" color='red' style={{ flex: 1 }}>
-       <Link to={"/resa/"+ idEvent} children={
+       <Link to={"/resa/"+ event.evenement_id} children={
           "Voir liste de réservation" 
 
        }/>

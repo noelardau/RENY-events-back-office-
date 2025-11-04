@@ -23,7 +23,9 @@ export async function clientLoader({params}:Route.LoaderArgs){
   // return data.body
   // }).then(r=>console.log(r?.getReader())).catch(err=> {throw err})
 
-    return null
+    return {
+      eventId: id
+    }
 }
 
 
@@ -32,7 +34,7 @@ export async function clientLoader({params}:Route.LoaderArgs){
 export default function Evenement({loaderData}:Route.ComponentProps) {
 
   
-     const {error,data,isPending} = queryGet(['user'],"https://jsonplaceholder.typicode.com/users")
+     const {error,data,isPending} = queryGet(['user'],"http://localhost:8080/v1/evenements/"+loaderData.eventId)
  
  
   if(error){
@@ -52,12 +54,14 @@ export default function Evenement({loaderData}:Route.ComponentProps) {
 
   }
 
+  console.log(data)
+
   return (
     <Container size="md" p="100">
         
       {/* <h1>Event number {loaderData.title} </h1> */}
-{data[0].name}
-    <SingleEventCard idEvent={data[0].id}/>
+{data.titre}
+    <SingleEventCard event={data}/>
     </Container>
   );
 }

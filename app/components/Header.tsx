@@ -48,7 +48,7 @@ export function Header({isConnected}: {isConnected: boolean}) {
                   Annuler
                 </Button>
                 <Form method='POST' onClick={() => setOpened(false)}>
-                <Button type='submit'>Confirmer</Button>
+                <Button type='submit' color='red'>Confirmer</Button>
                 </Form>
               
               </Group>

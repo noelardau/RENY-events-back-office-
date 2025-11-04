@@ -11,17 +11,21 @@ export const NewEventForm = () => {
     description: '',
     date_debut: '',
     date_fin: '',  
-    type_evenement: '',
-    lieu: {
-      nom: '',
-      adresse: '',
-      ville: '',
-      capacite: ''
-     
-    },
+    type_id: '',
+      lieu_nom: 'dfdf',
+      lieu_adresse: 'fdfdfdf',
+      lieu_ville: 'dfdfdf',
+      lieu_capacite: '1000',
     tarifs: [],
     fichiers: [],
   });
+
+  const [lieu, setLieu] = useState({
+    nom: form.lieu_nom,
+    adresse: form.lieu_adresse,
+    ville: form.lieu_ville,
+    capacite: form.lieu_capacite
+  }) 
 
   const navigate = useNavigate();
 
@@ -37,9 +41,8 @@ export const NewEventForm = () => {
     console.log('Submitting form:', form);
     
     try {
-      const response = await fetch('https://2527cf11056ca5ab863191300ee420ab.serveo.net/v1/evenements', {
+      const response = await fetch('https://ce8181ec590d.ngrok-free.app/v1/evenements', {
         method: 'POST',
-        mode: 'no-cors',
         headers: {
           'Content-Type': 'application/json'
         },
@@ -52,7 +55,7 @@ export const NewEventForm = () => {
 
       const data = await response.json();
       console.log('Response:', data);
-      navigate('/events');
+      // navigate('/events');
     } catch (error) {
       console.error('Error submitting form:', error);
     }
@@ -99,23 +102,23 @@ export const NewEventForm = () => {
           {/* Type et dates */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div>
-              <label htmlFor="type_evenement" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="type_id" className="block text-sm font-medium text-gray-700">
                 Type d'événement
               </label>
               <select
-                id="type_evenement"
-                value={form.type_evenement}
-                onChange={handleChange('type_evenement')}
+                id="type_id"
+                value={form.type_id}
+                onChange={handleChange('type_id')}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 required
               >
                 <option value="">Sélectionnez un type</option>
-                <option value="1">Conférence</option>
-                <option value="2">Concert</option>
+                <option value="b688869b-f36f-4fad-bcd9-27fe25785ecb">Conférence</option>
+                {/* <option value="2">Concert</option>
                 <option value="3">Concert</option>
                 <option value="4">Spectacle</option>
                 <option value="5">Exposition</option>
-                <option value="6">Autre</option>
+                <option value="6">Autre</option> */}
               </select>
             </div>
 
@@ -157,7 +160,7 @@ export const NewEventForm = () => {
           <div className="border-t border-gray-200 pt-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Lieu de l'événement</h3>
             <LieuInput 
-              value={form.lieu} 
+              value={lieu} 
               onChange={(lieu) => setForm(prev => ({ ...prev, lieu }))}
             />
           </div>
@@ -182,7 +185,7 @@ export const NewEventForm = () => {
           {/* Boutons d'action */}
           <div className="flex justify-end space-x-4 pt-6">
             <Link
-              to="/admin"
+              to="/event"
               className="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
               Annuler

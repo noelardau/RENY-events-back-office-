@@ -1,9 +1,10 @@
 import { IconHeart } from '@tabler/icons-react';
-import { Modal, Badge, Button, Card, Group, Image, Text } from '@mantine/core';
+import { Modal, Badge, Button, Card, Group, Image, Text, SimpleGrid } from '@mantine/core';
 import { StatEvent } from './StatEvent';
 import classes from '../styles/SingleEventCard.module.css';
 import { useState } from 'react';
 import { ReservationForm } from './ReservationFrom';
+import { Link } from 'react-router';
 
 const mockdata = {
   image:
@@ -22,7 +23,7 @@ const mockdata = {
 };
 
 
-export function SingleEventCard() {
+export function SingleEventCard({idEvent}: {idEvent: number}) {
   const { image, title, description, country, badges } = mockdata;
 
   const [opened, setOpened] = useState(false);
@@ -50,7 +51,7 @@ export function SingleEventCard() {
       </Modal>
     <Card withBorder radius="md" p="md" className={classes.card}>
       <Card.Section>
-        <Image src={image} alt={title} height={180} />
+        <Image src={image} alt={title} height={100} />
       </Card.Section>
 
       <Card.Section className={classes.section} mt="md">
@@ -71,17 +72,23 @@ export function SingleEventCard() {
         <StatEvent/>
       </Card.Section>
 
-      <Group mt="xs">
-        <Button radius="md" onClick={() => setOpened(true)} style={{ flex: 1 }}>
+      <SimpleGrid mt="xs" cols={{ base: 1, sm: 3 }}>
+        <Button radius="md" color='green' onClick={() => setOpened(true)} style={{ flex: 1 }}>
           Faire une réservation
         </Button>
         <Button radius="md" color='red' style={{ flex: 1 }}>
-          Voir liste de réservation 
+       <Link to={"/resa/"+ idEvent} children={
+          "Voir liste de réservation" 
+
+       }/>
+        </Button>
+        <Button radius="md" onClick={() => setOpened(true)} style={{ flex: 1 }}>
+          Modifier
         </Button>
         {/* <ActionIcon variant="default" radius="md" size={36}>
           <IconHeart className={classes.like} stroke={1.5} />
           </ActionIcon> */}
-      </Group>
+      </SimpleGrid>
     </Card>
           </>
   );

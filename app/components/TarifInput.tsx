@@ -3,7 +3,7 @@ import React from 'react';
 
 export const TarifInput = ({ value, onChange}) => {
 const typesTarif = [
-  {id: 1, type:"VIP"}, {id:2, type:"GOLD"}
+  {id:"ecfd1152-91c5-4ca6-8aa6-d006e1b1f662", type:"VIP"}, {id:"6ebe3b37-01bc-462a-a37e-cc3fb3cb5e11", type:"GOLD"}
 ]
 
   const handleChange = (index, field, newValue) => {
@@ -20,7 +20,7 @@ const typesTarif = [
     onChange([
       ...value,
       {
-        type_place: '',
+        type_place_id: '',
         prix: '',
         nombre_places: ''
       }
@@ -52,8 +52,8 @@ const typesTarif = [
                 Type de place
               </label>
                 <select
-                id="type_evenement"
-                value={tarif.type_place}
+                id="type_place"
+                value={tarif.type_place_id}
                onChange={(e) => handleChange(index, 'type_place', e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 required

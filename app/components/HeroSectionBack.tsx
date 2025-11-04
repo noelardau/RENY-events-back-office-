@@ -24,7 +24,7 @@ export function HeroContentLeft({isConnected}: {isConnected: boolean}) {
         </Button>
      </Link>
         : 
-          <Link to="/events">
+          <Link to="/event">
           <Button variant="outline" color='red' size="xl" radius="xl" className={classes.control}>
           Voir les événements
         </Button>

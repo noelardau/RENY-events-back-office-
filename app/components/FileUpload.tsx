@@ -23,7 +23,7 @@ export const FileUpload = ({ onFileChange }) => {
         nom_fichier: file.name,
         type_mime: file.type,
         type_fichier: 'affiche',
-        donnees_base64: base64
+        donnees_bytea: base64
       };
 
       // set preview URL

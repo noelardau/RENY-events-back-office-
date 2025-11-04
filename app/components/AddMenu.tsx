@@ -31,11 +31,11 @@ export function AddMenu() {
           
         >
         {
-            location == "/events" ? 
-             <Link to="/new-event">
+            location == "/event" ? 
+             <Link to="event/new">
           Créer un évènement
          </Link> :
-          <Link to="/events">
+          <Link to="event">
           Liste des évènements
          </Link>
         }

@@ -31,7 +31,11 @@ export default function NewEvenement({loaderData}: Route.ComponentProps) {
 
 
   return (
-    <NewEventForm ></NewEventForm>
+    <Container size="md" my="md">
+
+      <NewEventForm ></NewEventForm>
+
+    </Container>
   );
 
 }

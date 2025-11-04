@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 
 const mockdata = [
   {
-    id:2,
+    id:"fc142deb-73c7-4dbb-8f51-fe05a8231836",
     title: 'Top 10 places to visit in Norway this summer',
     image:
       'https://images.unsplash.com/photo-1527004013197-933c4bb611b3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80',

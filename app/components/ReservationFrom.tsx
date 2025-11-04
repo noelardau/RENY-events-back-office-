@@ -1,91 +1,115 @@
-
-
-import { useForm } from '@mantine/form';
-import { 
-  TextInput, 
-  NumberInput, 
-  Select, 
-  Button, 
-  Group, 
-  Box, 
-  Text 
+import { useForm, zodResolver } from '@mantine/form';
+import {
+  TextInput,
+  Select,
+  NumberInput,
+  Button,
+  Group,
+  Box,
+  Text,
+  ActionIcon,
+  Stack,
+  SimpleGrid,
 } from '@mantine/core';
-import { zodResolver } from '@mantine/form';
-import { reservationSchema} from '../schema/reservationSchema'; // Adapte le chemin
-import {z} from "zod"
+import { IconTrash } from '@tabler/icons-react';
+import { z } from 'zod';
+import { reservationSchema } from '../schema/reservationSchema';
 
 type FormValues = z.infer<typeof reservationSchema>;
+
+const placeOptions = [
+  { value: 'standard', label: 'Standard' },
+  { value: 'vip', label: 'VIP' },
+  { value: 'premium', label: 'Premium' },
+];
 
 export function ReservationForm({ onSubmit }: { onSubmit?: (values: FormValues) => void }) {
   const form = useForm<FormValues>({
     initialValues: {
       email: '',
-      type: 'standard',
-      places: 1,
       reference: '',
+      places: [{ type: 'standard', quantity: 1 }],
     }
   });
 
+  const addPlaceType = () => {
+    form.insertListItem('places', { type: 'standard', quantity: 1 });
+  };
+
+  const removePlaceType = (index: number) => {
+    form.removeListItem('places', index);
+  };
+
+  const fields = form.values.places.map((_, index) => (
+    <SimpleGrid cols={{ base: 1, sm: 2 }} key={index} mt="xs" align="end">
+      <Select
+        label={index === 0 ? 'Type de place' : ''}
+        placeholder="Choisir"
+        data={placeOptions}
+        {...form.getInputProps(`places.${index}.type`)}
+      />
+      <Group align="end" grow>
+        <NumberInput
+          label={index === 0 ? 'Nombre' : ''}
+          placeholder="1"
+          min={1}
+          max={10}
+          {...form.getInputProps(`places.${index}.quantity`)}
+        />
+        {form.values.places.length > 1 && (
+          <ActionIcon
+            color="red"
+            variant="subtle"
+            onClick={() => removePlaceType(index)}
+            size="lg"
+          >
+            <IconTrash size={16} />
+          </ActionIcon>
+        )}
+      </Group>
+    </SimpleGrid>
+  ));
+
   const handleSubmit = (values: FormValues) => {
-    console.log('Données de réservation :', values);
-    // Ici : Appel API pour soumettre la réservation
-    if (onSubmit) onSubmit(values);
-    form.reset(); // Optionnel : Reset après soumission
+    console.log('Réservation :', values);
+    onSubmit?.(values);
+    form.reset();
   };
 
   return (
-    <Box component="form" onSubmit={form.onSubmit(handleSubmit)} maw={400}>
-      <TextInput
-        label="Email"
-        placeholder="votre@email.com"
-        withAsterisk
-        mb="sm"
-        {...form.getInputProps('email')}
-      />
-      
-      <Select
-        label="Type de réservation"
-        placeholder="Choisir un type"
-        withAsterisk
-        mb="sm"
-        data={[
-          { value: 'standard', label: 'Standard' },
-          { value: 'vip', label: 'VIP' },
-          { value: 'premium', label: 'Premium' },
-        ]}
-        {...form.getInputProps('type')}
-      />
-      
-      <NumberInput
-        label="Nombre de places"
-        placeholder="1"
-        withAsterisk
-        mb="sm"
-        min={1}
-        max={10}
-        {...form.getInputProps('places')}
-      />
-      
-      <TextInput
-        label="Référence du transfert d'argent"
-        placeholder="Ex: TRANS-12345"
-        withAsterisk
-        mb="md"
-        {...form.getInputProps('reference')}
-      />
+    <Box component="form" onSubmit={form.onSubmit(handleSubmit)} maw={500} mx="auto">
+      <Stack gap="md">
+        <TextInput
+          label="Email"
+          placeholder="votre@email.com"
+          withAsterisk
+          {...form.getInputProps('email')}
+        />
 
-      <Group justify="flex-end">
-        <Button type="submit" fullWidth>
-          Réserver
+        {fields}
+
+        <Button
+          type="button"
+          variant="light"
+          onClick={addPlaceType}
+          leftSection={<Text size="sm">+</Text>}
+        >
+          Ajouter un type de place
         </Button>
-      </Group>
 
-      {/* Optionnel : Affichage des erreurs globales */}
-      {/* {form.errors.$schema && (
-        <Text c="red" size="sm" mt="sm">
-          {form.errors.$schema}
-        </Text>
-      )} */}
+        <TextInput
+          label="Référence du transfert"
+          placeholder="Ex: TRANS-12345"
+          withAsterisk
+          {...form.getInputProps('reference')}
+        />
+
+        <Group justify="flex-end" mt="md">
+          <Button type="submit" color="blue">
+            Réserver
+          </Button>
+        </Group>
+      </Stack>
     </Box>
   );
 }

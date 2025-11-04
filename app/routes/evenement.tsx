@@ -2,7 +2,7 @@ import { Container, Flex } from "@mantine/core";
 import type { Route } from "./+types/evenement";
 import { SingleEventCard } from "~/components/SingleEventCard";
 
-import {useQuery} from '@tanstack/react-query'
+import { queryGet } from "~/hooks/queryGet";
 
 import { Loader } from '@mantine/core';
 
@@ -29,14 +29,9 @@ export async function clientLoader({params}:Route.LoaderArgs){
 
 
 export default function Evenement({loaderData}:Route.ComponentProps) {
-  const {error,data,isPending} = useQuery({ queryKey: ['todos'], queryFn:  async () => {
-     const response = await fetch(
-       "https://46f6ac1dd812.ngrok-free.app/v1/evenements/fc142deb-73c7-4dbb-8f51-fe05a8231836"
-     )
-     return await response.json()
 
-   }
-    })
+  
+     const {error,data,isPending} = queryGet(['user'],"https://jsonplaceholder.typicode.com/users")
  
  
   if(error){
@@ -47,18 +42,21 @@ export default function Evenement({loaderData}:Route.ComponentProps) {
   }
 
   if(isPending){
-    return  <Flex justify={"center"}>
+    return <Container size="md" p="100">  
+      <Flex justify="center" align="center" style={{ height: '100vh' }}>  
+        <Loader size="lg" variant="dots" />
+      </Flex>
+    </Container>
 
-   <Loader color="blue"></Loader>
-    </Flex>
+
   }
 
   return (
     <Container size="md" p="100">
         
       {/* <h1>Event number {loaderData.title} </h1> */}
-
-    <SingleEventCard idEvent={data}/>
+{data[0].name}
+    <SingleEventCard idEvent={data[0].id}/>
     </Container>
   );
 }

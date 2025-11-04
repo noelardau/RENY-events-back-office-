@@ -11,6 +11,13 @@ import {
 } from "react-router";
 import { ColorSchemeScript, MantineProvider, mantineHtmlProps } from '@mantine/core';
 
+import {
+  
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
+
+
 import type { Route } from "./+types/root";
 import { deconectUser, user } from './db/user';
 
@@ -55,11 +62,16 @@ export async function action({request}: Route.ActionArgs) {
   deconectUser();
 }
 
+const queryClient = new QueryClient()
+
 export default function App({loaderData}: Route.ComponentProps) {
   return <div>
-    <Header isConnected={loaderData.isConnected}></Header>
-    <Outlet />
+          <QueryClientProvider client={queryClient}>
 
+            <Header isConnected={loaderData.isConnected}></Header>
+            <Outlet />
+
+          </QueryClientProvider>
   </div> 
   
 }

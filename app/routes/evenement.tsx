@@ -1,4 +1,4 @@
-import { Container, Flex } from "@mantine/core";
+import { Button, Container, Flex, Group } from "@mantine/core";
 import type { Route } from "./+types/evenement";
 // import axios from "axios"
 import { SingleEventCard } from "~/components/SingleEventCard";
@@ -6,6 +6,8 @@ import { SingleEventCard } from "~/components/SingleEventCard";
 import { queryGet } from "~/hooks/queryGet";
 
 import { Loader } from '@mantine/core';
+import { IconArrowLeft } from "@tabler/icons-react";
+import { Link } from "react-router";
 
 
 export async function clientLoader({params}:Route.LoaderArgs){
@@ -58,6 +60,20 @@ export default function Evenement({loaderData}:Route.ComponentProps) {
 
   return (
     <Container size="md" p="100">
+      
+      <Group mb="md">
+        <Link to={"/event"} children={
+          
+  <Button
+    leftSection={<IconArrowLeft size={18} />}
+    variant="default"
+    // onClick={() => navigate(-1)}
+  >
+    Retour
+  </Button>
+        } />
+        
+</Group>
         
       {/* <h1>Event number {loaderData.title} </h1> */}
 {data.titre}

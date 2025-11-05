@@ -3,7 +3,7 @@ import React from 'react';
 
 export const TarifInput = ({ value, onChange}) => {
 const typesTarif = [
-  {id:"ecfd1152-91c5-4ca6-8aa6-d006e1b1f662", type:"VIP"}, {id:"6ebe3b37-01bc-462a-a37e-cc3fb3cb5e11", type:"GOLD"}
+  {id:"211c482e-2197-467c-a4ea-f825611a58ea", type:"VIP"}, {id:"262a7176-e2f7-4d88-adb9-6591f0942734", type:"GOLD"}
 ]
 
   const handleChange = (index, field, newValue) => {
@@ -60,14 +60,14 @@ const typesTarif = [
               >
                 {typesTarif.map(tt => <option key={tt.id} value={tt.id}>{tt.type}</option>)}
               </select>
-              {/* <input
+              <input
                 type="text"
                 value={tarif.type_place}
                 onChange={(e) => handleChange(index, 'type_place', e.target.value)}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                 placeholder="Ex: Standard, VIP, Early Bird"
                 required
-              /> */}
+              />
             </div>
 
             <div>

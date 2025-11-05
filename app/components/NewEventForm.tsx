@@ -1,74 +1,116 @@
-
 import React, { useState } from 'react';
-import { Form, Link, useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { LieuInput } from './LieuInput';
 import { TarifInput } from './TarifInput';
 import { FileUpload } from './FileUpload';
+
+// === Convertir Base64 → Hex ===
+const base64ToHex = (base64: string): string => {
+  const base64Data = base64.replace(/^data:image\/[a-z]+;base64,/, '');
+  const binaryString = atob(base64Data);
+  let hex = '';
+  for (let i = 0; i < binaryString.length; i++) {
+    hex += binaryString.charCodeAt(i).toString(16).padStart(2, '0');
+  }
+  return hex.toUpperCase();
+};
+
+// === Convertir date YYYY-MM-DD → ISO 8601 ===
+const formatDateToISO = (dateStr: string): string => {
+  if (!dateStr) return '';
+  return `${dateStr}T00:00:00Z`; // Minuit UTC
+};
 
 export const NewEventForm = () => {
   const [form, setForm] = useState({
     titre: '',
     description: '',
     date_debut: '',
-    date_fin: '',  
+    date_fin: '',
     type_id: '',
-      lieu_nom: 'dfdf',
-      lieu_adresse: 'fdfdfdf',
-      lieu_ville: 'dfdfdf',
-      lieu_capacite: '1000',
+    lieu_nom: '',
+    lieu_adresse: '',
+    lieu_ville: '',
+    lieu_capacite: '',
     tarifs: [],
     fichiers: [],
   });
 
-  const [lieu, setLieu] = useState({
-    nom: form.lieu_nom,
-    adresse: form.lieu_adresse,
-    ville: form.lieu_ville,
-    capacite: form.lieu_capacite
-  }) 
-
   const navigate = useNavigate();
 
-  const handleChange = (field) => (e) => {
+  const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setForm((prev) => ({
       ...prev,
-      [field]: e.target.value
+      [field]: e.target.value,
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Submitting form:', form);
-    
+
+    // === 1. Formater les dates ===
+    const date_debut = formatDateToISO(form.date_debut);
+    const date_fin = formatDateToISO(form.date_fin);
+
+    if (!date_debut || !date_fin) {
+      alert('Veuillez sélectionner des dates valides');
+      return;
+    }
+
+    // === 2. Convertir les fichiers en hex ===
+    const fichiersAvecHex = form.fichiers.map((f: any) => ({
+      ...f,
+      donnees_bytea: base64ToHex(f.donnees_bytea),
+    }));
+
+    // === 3. Construire le payload ===
+    const payload = {
+      ...form,
+      date_debut,
+      date_fin,
+      lieu_capacite: parseInt(form.lieu_capacite, 10) || 0,
+      tarifs: form.tarifs.map((t: any) => ({
+        ...t,
+        prix: Number(t.prix),
+        nombre_places: Number(t.nombre_places),
+      })),
+      fichiers: fichiersAvecHex,
+    };
+
+    console.log('Payload envoyé:', payload);
+
     try {
       const response = await fetch('http://localhost:8080/v1/evenements', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
         },
-        body: JSON.stringify(form)
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${errorText}`);
       }
 
       const data = await response.json();
-      console.log('Response:', data);
+      console.log('Succès:', data);
+      alert('Événement créé !');
       // navigate('/events');
-    } catch (error) {
-      console.error('Error submitting form:', error);
+    } catch (error: any) {
+      console.error('Erreur:', error);
+      alert('Erreur : ' + error.message);
     }
   };
 
   return (
-    <div className="container mx-auto  pt-20 bg-white min-h-screen">
+    <div className="container mx-auto pt-20 bg-white min-h-screen">
       <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
         <h2 className="text-lg font-semibold text-gray-700 mb-4">Nouvel événement</h2>
         <p className="text-gray-500 mb-6">Créez un nouvel événement à venir</p>
-        
+
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Informations de base */}
+          {/* === Titre & Description === */}
           <div className="space-y-4">
             <div>
               <label htmlFor="titre" className="block text-sm font-medium text-gray-700">
@@ -99,7 +141,7 @@ export const NewEventForm = () => {
             </div>
           </div>
 
-          {/* Type et dates */}
+          {/* === Type & Dates === */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div>
               <label htmlFor="type_id" className="block text-sm font-medium text-gray-700">
@@ -114,11 +156,7 @@ export const NewEventForm = () => {
               >
                 <option value="">Sélectionnez un type</option>
                 <option value="b688869b-f36f-4fad-bcd9-27fe25785ecb">Conférence</option>
-                {/* <option value="2">Concert</option>
-                <option value="3">Concert</option>
-                <option value="4">Spectacle</option>
-                <option value="5">Exposition</option>
-                <option value="6">Autre</option> */}
+                <option value="autre-uuid">Concert</option>
               </select>
             </div>
 
@@ -136,53 +174,65 @@ export const NewEventForm = () => {
                   required
                 />
               </div>
+
               <div>
                 <label htmlFor="date_fin" className="block text-sm font-medium text-gray-700">
                   Date de fin
                 </label>
                 <input
                   type="date"
-                  id="date_debut"
+                  id="date_fin"
                   value={form.date_fin}
                   onChange={handleChange('date_fin')}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                   required
                 />
               </div>
-
-              
             </div>
-
-      
           </div>
 
-          {/* Lieu */}
+          {/* === Lieu === */}
           <div className="border-t border-gray-200 pt-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Lieu de l'événement</h3>
-            <LieuInput 
-              value={lieu} 
-              onChange={(lieu) => setForm(prev => ({ ...prev, lieu }))}
+            <LieuInput
+              value={{
+                nom: form.lieu_nom,
+                adresse: form.lieu_adresse,
+                ville: form.lieu_ville,
+                capacite: form.lieu_capacite,
+              }}
+              onChange={(lieu) =>
+                setForm((prev) => ({
+                  ...prev,
+                  lieu_nom: lieu.nom,
+                  lieu_adresse: lieu.adresse,
+                  lieu_ville: lieu.ville,
+                  lieu_capacite: lieu.capacite,
+                }))
+              }
             />
           </div>
 
-          {/* Tarifs */}
+          {/* === Tarifs === */}
           <div className="border-t border-gray-200 pt-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Tarifs</h3>
             <TarifInput
               value={form.tarifs}
-              onChange={(tarifs) => setForm(prev => ({ ...prev, tarifs }))}
+              onChange={(tarifs) => setForm((prev) => ({ ...prev, tarifs }))}
             />
           </div>
 
-          {/* Image */}
+          {/* === Image === */}
           <div className="border-t border-gray-200 pt-6">
             <h3 className="text-lg font-medium text-gray-900 mb-4">Image de l'événement</h3>
             <FileUpload
-              onFileChange={(filesArray) => setForm(prev => ({ ...prev, fichiers: filesArray || [] }))}
+              onFileChange={(filesArray) =>
+                setForm((prev) => ({ ...prev, fichiers: filesArray || [] }))
+              }
             />
           </div>
 
-          {/* Boutons d'action */}
+          {/* === Boutons === */}
           <div className="flex justify-end space-x-4 pt-6">
             <Link
               to="/event"

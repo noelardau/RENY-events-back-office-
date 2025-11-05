@@ -1,17 +1,39 @@
-import { Container, Text } from "@mantine/core";
+import { Container, Flex, Loader, Text } from "@mantine/core";
 import type { Route } from "./+types/listeResa";
 import { TableResa } from "~/components/TableResa";
 
+import { queryGet } from "~/hooks/queryGet";
+
 export async function loader({params}:Route.LoaderArgs){
-    let reservation = [
-        {idEvent: params.eventId, nomClient: "FIDY", prenomClient: "Jo", typePlace: "VIP", nbPlace:1, valide: false},
-        {idEvent: params.eventId, nomClient: "RAKOTO", prenomClient: "Joary", typePlace: "SIMPLE", nbPlace:3, valide: true},
 
-    ]
-
+    return params.eventId
+    
 }
 
-export default function ListResa(){
+
+export default function ListResa({loaderData}:Route.ComponentProps){
+    
+    let {data, error,isPending} = queryGet(['reservations'], `http://localhost:8080/v1/evenements/reservations/${loaderData}`)
+  
+    if(error){
+      return  <Container size="md" p="100">
+        <div>Une erreur est survenue : {error.message}</div>
+  
+      </Container>
+    }
+  
+    if(isPending){
+      return <Container size="md" p="100">  
+        <Flex justify="center" align="center" style={{ height: '100vh' }}>  
+          <Loader size="lg" variant="dots" />
+        </Flex>
+      </Container>
+  
+  
+    }
+
+    
+
 
     return <Container my="md" size="md" pt={100}>
         
@@ -20,6 +42,6 @@ export default function ListResa(){
         
         </div>
 
-        <TableResa></TableResa>
+        <TableResa resaData={data}></TableResa>
     </Container>
 }

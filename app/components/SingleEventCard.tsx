@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { ReservationForm } from './ReservationFrom';
 import { Link } from 'react-router';
 
-import { usePostReservation } from '~/hooks/postResa';
+import { useQueryPost } from '~/hooks/useQueryPost';
 
 
 const mockdata = {
@@ -37,10 +37,10 @@ export function SingleEventCard({event}) {
   //   </Badge>
   // ));
 
-  let {mutate, error, isPending} =  usePostReservation()
-
-let saveResa = (newResa)=>{
-
+  
+  let {mutate, error, isPending} =  useQueryPost("http://localhost:4000/v1/reservations")
+  let saveResa = (newResa)=>{
+    
   mutate(newResa)
 }
 

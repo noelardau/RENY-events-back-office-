@@ -104,7 +104,7 @@ export const NewEventForm = () => {
   };
 
   return (
-    <div className="container mx-auto pt-20 bg-white min-h-screen">
+    <div className="container mx-auto pt-10 bg-white min-h-screen">
       <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
         <h2 className="text-lg font-semibold text-gray-700 mb-4">Nouvel événement</h2>
         <p className="text-gray-500 mb-6">Créez un nouvel événement à venir</p>

@@ -72,11 +72,13 @@ export default function Evenement({loaderData}:Route.ComponentProps) {
     Retour
   </Button>
         } />
+
+        
         
 </Group>
         
       {/* <h1>Event number {loaderData.title} </h1> */}
-{data.titre}
+
     <SingleEventCard event={data}/>
     </Container>
   );

@@ -71,7 +71,7 @@ export function Header({isConnected}: {isConnected: boolean}) {
         //  <Group gap={3} visibleFrom="xs">
          <Group gap={3} >
           
-          <AddMenu/>
+        
               <Button onClick={()=> setOpened(true)} color='none'><FiLogOut size={18} color='red' /></Button>
          
         </Group> 

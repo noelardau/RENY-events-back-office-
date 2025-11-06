@@ -14,7 +14,7 @@ export async function loader(){
 
 export default function Evenements() {
   return (
-    <Container size="md" my="md" pt={100}>
+    <Container size="md" my="md" p={100}>
      <Flex justify="space-between">
 
 
@@ -22,7 +22,7 @@ export default function Evenements() {
 
       <Link to={"new"} children={
 
-      <Button color="blue" >+ Nouveau</Button>
+      <Button color="rgb(79, 70, 229)" >+ Nouveau</Button>
       }></Link>
 
 

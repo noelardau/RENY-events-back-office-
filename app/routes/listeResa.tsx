@@ -1,7 +1,9 @@
-import { Container, Flex, Loader, Text } from "@mantine/core";
+import { Button, Container, Flex, Loader, Text } from "@mantine/core";
 import type { Route } from "./+types/listeResa";
 import { TableResa } from "~/components/TableResa";
 import { useQueryGet } from "~/hooks/useQueryGet";
+import { Link } from "react-router";
+import { IconArrowLeft } from "@tabler/icons-react";
 
 export const loader = async ({params}:Route.LoaderArgs) => params.eventId 
 
@@ -26,10 +28,27 @@ export default function ListResa({loaderData}:Route.ComponentProps){
 
     return <Container my="md" size="md" pt={100}>
        
-          <div className="flex">
-        <Text>Liste des réservations</Text>
-        
-        </div>
+         <Flex justify="space-between">
+
+ <Link to={"/event/"+data.evenement_id} children={
+          
+  <Button
+    leftSection={<IconArrowLeft size={18} />}
+    variant="default"
+    // onClick={() => navigate(-1)}
+  >
+    Retour
+  </Button>} />
+
+
+
+      <Text color="red" size="md">Liste des réservations</Text>
+
+      <Link to={"new"} children={
+
+      <Button color="rgb(79, 70, 229)" >+ Nouveau</Button>
+      }></Link>
+         </Flex >
        
         <TableResa reservations={data.reservations}></TableResa>
         

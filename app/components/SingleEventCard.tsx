@@ -1,5 +1,5 @@
 import { IconHeart } from '@tabler/icons-react';
-import { Modal, Badge, Button, Card, Group, Image, Text, SimpleGrid } from '@mantine/core';
+import { Modal, Badge, Button, Card, Group, Image, Text, SimpleGrid, AspectRatio } from '@mantine/core';
 import { StatEvent } from './StatEvent';
 import classes from '../styles/SingleEventCard.module.css';
 import { useState } from 'react';
@@ -60,9 +60,11 @@ export function SingleEventCard({event}) {
        </div>
        
       </Modal>
-    <Card withBorder radius="md" p="md" className={classes.card}>
+    <Card withBorder radius="md" className={classes.card}>
       <Card.Section>
-        <Image alt={"title"} height={100} />
+        <AspectRatio ratio={1920 / 1080}>
+                <Image src={'https://images.unsplash.com/photo-1527004013197-933c4bb611b3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80'} radius="md" />
+              </AspectRatio>
       </Card.Section>
 
       <Card.Section className={classes.section} mt="md">
@@ -75,13 +77,15 @@ export function SingleEventCard({event}) {
           </Badge>
         </Group>
         <Text fz="sm" mt="xs">
-          {event.description_evenement}
+          {/* {event.description_evenement} */}
+          <p>Lorem ipsum dolor sit amet. Ut cupiditate sapiente id possimus eius eum ducimus perspiciatis sed magnam quaerat et porro cumque aut reiciendis laboriosam quo galisum nulla. Qui rerum nihil aut omnis internos et harum dolores qui nulla unde. </p><p>Cum accusantium sunt in quaerat enim cum iusto magni eum voluptatem voluptatem sed quidem unde nam eaque alias sed iste veniam. Eos dolorum asperiores et omnis pariatur non dolor sint sed excepturi voluptatem et laudantium dolore. </p>
+
         </Text>
       </Card.Section>
-
+{/* 
       <Card.Section className={classes.section}>
         <StatEvent/>
-      </Card.Section>
+      </Card.Section> */}
 
       <SimpleGrid mt="xs" cols={{ base: 1, sm: 3 }}>
         <Button radius="md" color='green' onClick={() => setOpened(true)} style={{ flex: 1 }}>

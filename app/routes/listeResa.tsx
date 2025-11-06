@@ -1,47 +1,38 @@
 import { Container, Flex, Loader, Text } from "@mantine/core";
 import type { Route } from "./+types/listeResa";
 import { TableResa } from "~/components/TableResa";
+import { useQueryGet } from "~/hooks/useQueryGet";
 
-import { queryGet } from "~/hooks/queryGet";
-
-export async function loader({params}:Route.LoaderArgs){
-
-    return params.eventId
-    
-}
-
+export const loader = async ({params}:Route.LoaderArgs) => params.eventId 
 
 export default function ListResa({loaderData}:Route.ComponentProps){
-    
-    let {data, error,isPending} = queryGet(['reservations'], `http://localhost:8080/v1/evenements/reservations/${loaderData}`)
-  
-    if(error){
-      return  <Container size="md" p="100">
-        <div>Une erreur est survenue : {error.message}</div>
-  
-      </Container>
-    }
-  
-    if(isPending){
-      return <Container size="md" p="100">  
-        <Flex justify="center" align="center" style={{ height: '100vh' }}>  
-          <Loader size="lg" variant="dots" />
-        </Flex>
-      </Container>
-  
-  
-    }
 
+    const {data, error, isPending} = useQueryGet(['resa'], "http://localhost:4000/v1/evenements/reservations/"+loaderData)
     
+    console.log(data)
+
+    if(error){ 
+        return <Container size="md" p="100">
+            <div>Une erreur est survenue : {error.message}</div>
+        </Container>
+     }
+
+     if(isPending){
+        return <Container size="md" p="100">
+            <div>Chargement...</div>
+        </Container>
+     }  
 
 
     return <Container my="md" size="md" pt={100}>
-        
-        <div className="flex">
+       
+          <div className="flex">
         <Text>Liste des réservations</Text>
         
         </div>
+       
+        <TableResa reservations={data.reservations}></TableResa>
+        
 
-        <TableResa resaData={data}></TableResa>
     </Container>
 }

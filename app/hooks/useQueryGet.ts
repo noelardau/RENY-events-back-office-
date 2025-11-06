@@ -2,7 +2,7 @@
 import {useQuery} from '@tanstack/react-query'
 
 
-export const queryGet = (queryKey:string[], url:string) => {  
+export const useQueryGet = (queryKey:string[], url:string) => {  
        
        
        const {error,data,isPending} = useQuery({ queryKey, queryFn:  async () => {

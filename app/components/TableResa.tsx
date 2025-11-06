@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import cx from 'clsx';
-import { Button, ScrollArea, Table } from '@mantine/core';
+import { Button, ScrollArea, Table, Text } from '@mantine/core';
 import classes from '../styles/TableScrollArea.module.css';
 
   
@@ -22,7 +22,7 @@ export function TableResa({reservations}) {
     <Table.Tr key={row.reservation_id}>
       <Table.Td>{row.reservation_id}</Table.Td>
       <Table.Td>{row.email}</Table.Td>
-      <Table.Td>{row.etat_reservation == "en_attente" ? <Button onClick={e=>{ validateResa(row.reservation_id)}}>Valider resa</Button> : "resa validé"}</Table.Td>
+      <Table.Td>{row.etat_reservation == "en_attente" ? <Button onClick={e=>{ validateResa(row.reservation_id)}}>Valider resa</Button> : <Text color='green'>Validée</Text> }</Table.Td>
     </Table.Tr>
   ));
 

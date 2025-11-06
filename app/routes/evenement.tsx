@@ -3,12 +3,12 @@ import type { Route } from "./+types/evenement";
 // import axios from "axios"
 import { SingleEventCard } from "~/components/SingleEventCard";
 
-import { queryGet } from "~/hooks/queryGet";
+import { useQueryGet } from "~/hooks/useQueryGet";
 
 import { Loader } from '@mantine/core';
 
 
-export async function clientLoader({params}:Route.LoaderArgs){
+export async function loader({params}:Route.LoaderArgs){
 
   let id = params.eventId
 
@@ -34,7 +34,7 @@ export async function clientLoader({params}:Route.LoaderArgs){
 export default function Evenement({loaderData}:Route.ComponentProps) {
 
   
-     const {error,data,isPending} = queryGet(['user'],"http://localhost:8080/v1/evenements/"+loaderData.eventId)
+     const {error,data,isPending} = useQueryGet(['user'],"http://localhost:4000/v1/evenements/"+loaderData.eventId)
  
  
   if(error){

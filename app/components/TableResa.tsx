@@ -3,37 +3,26 @@ import cx from 'clsx';
 import { Button, ScrollArea, Table } from '@mantine/core';
 import classes from '../styles/TableScrollArea.module.css';
 
-const data = [
-    {
-        id: 1,
-        nom: "BABA",
-        prenom:"Ganga",
-        email:"baba@gmail.com",
-        ref_paiement: "0012457",
-        verified: false
-    },
-     {
-        id: 2,
-        nom: "BABAkoto",
-        prenom:"GG",
-        email:"gga@gmail.com",
-        ref_paiement: "00487",
-        verified: true
-    },
-    
-]
   
 
-export function TableResa() {
+export function TableResa({reservations}) {
   const [scrolled, setScrolled] = useState(false);
 
-  const rows = data.map((row) => (
-    <Table.Tr key={row.id}>
-      <Table.Td>{row.nom}</Table.Td>
-      <Table.Td>{row.prenom}</Table.Td>
+  const validateResa = async ( id:string) =>{
+      const res = await fetch(`http://localhost:4000/v1/reservations/validate/${id}`, {
+        method: 'POST', body:null
+      });
+
+    console.log(res)
+
+
+  }
+
+  const rows = reservations.map((row) => (
+    <Table.Tr key={row.reservation_id}>
+      <Table.Td>{row.reservation_id}</Table.Td>
       <Table.Td>{row.email}</Table.Td>
-      <Table.Td>{row.ref_paiement}</Table.Td>
-      <Table.Td>{row.verified ? <Button>xxx</Button> : "non validé"}</Table.Td>
+      <Table.Td>{row.etat_reservation == "en_attente" ? <Button onClick={e=>{ validateResa(row.reservation_id)}}>Valider resa</Button> : "resa validé"}</Table.Td>
     </Table.Tr>
   ));
 
@@ -42,11 +31,10 @@ export function TableResa() {
       <Table miw={700}>
         <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
           <Table.Tr>
-            <Table.Th>Nom</Table.Th>
-            <Table.Th>Prénom</Table.Th>
+            <Table.Th>Id Resa</Table.Th>
+            
             <Table.Th>Email</Table.Th>
-            <Table.Th>Ref Paiement</Table.Th>
-            <Table.Th>---</Table.Th>
+            <Table.Th>Etat</Table.Th>
 
           </Table.Tr>
         </Table.Thead>

@@ -1,5 +1,5 @@
 export const user = {
-    isConnected: true,
+    isConnected: false,
 }
 
 export const deconectUser = () => {

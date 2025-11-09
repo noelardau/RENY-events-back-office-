@@ -1,13 +1,13 @@
 import { AspectRatio, Card, Container, Image, SimpleGrid, Text } from '@mantine/core';
 import classes from '../styles/EventsGrid.module.css';
 import { Link } from 'react-router';
+import event1 from "../assets/Foaran_ny_fetin_ny_reny.jpg"
 
 const mockdata = [
   {
     id:"ff741457-de4f-4408-b311-0350eaba674c",
-    title: 'Top 10 places to visit in Norway this summer',
-    image:
-      'https://images.unsplash.com/photo-1527004013197-933c4bb611b3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80',
+    title: 'Foire fête des mères',
+    image:event1,
     date: 'August 18, 2022',
   },
   {

@@ -1,4 +1,4 @@
-import { Button, Container, Flex, Loader, Text } from "@mantine/core";
+import { Button, Container, Flex, Loader, Text, Title } from "@mantine/core";
 import type { Route } from "./+types/listeResa";
 import { TableResa } from "~/components/TableResa";
 import { useQueryGet } from "~/hooks/useQueryGet";
@@ -30,23 +30,15 @@ export default function ListResa({loaderData}:Route.ComponentProps){
        
          <Flex justify="space-between">
 
- <Link to={"/event/"+data.evenement_id} children={
-          
-  <Button
-    leftSection={<IconArrowLeft size={18} />}
-    variant="default"
-    // onClick={() => navigate(-1)}
-  >
-    Retour
-  </Button>} />
+ <Link to={"/event/"+data.evenement_id} children={<IconArrowLeft size={18} color="red" />} />
 
 
 
-      <Text color="red" size="md">Liste des réservations</Text>
+      <Title c={"red"} size="md">Liste des réservations</Title>
 
       <Link to={"new"} children={
 
-      <Button color="rgb(79, 70, 229)" >+ Nouveau</Button>
+      <Button color="red" variant="outline" >+ Nouveau</Button>
       }></Link>
          </Flex >
        

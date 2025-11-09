@@ -1,5 +1,5 @@
 
-import { Button, Checkbox, Container, Flex, Group, TextInput } from '@mantine/core';
+import { Button, Checkbox, Container, Flex, Group, TextInput, Title } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { NewEventForm } from '~/components/NewEventForm';
 import type { Route } from './+types/newEvenement';
@@ -34,17 +34,16 @@ export default function NewEvenement({loaderData}: Route.ComponentProps) {
 
   return (
     <Container size="md" my="md" p={100}>
-
-
- <Link to={"/event/"} children={
+<Flex justify={"space-between"}>
+    <Link to={"/event/"} children={
           
-  <Button
-    leftSection={<IconArrowLeft size={18} />}
-    variant="default"
-    // onClick={() => navigate(-1)}
-  >
-    Retour
-  </Button>} />
+        <IconArrowLeft size={18} color='red'/>} />
+ <Title c={"red"} size={"md"}>Nouvel événement</Title>
+       <div></div>
+
+
+</Flex>
+
       <NewEventForm ></NewEventForm>
 
     </Container>

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router';
 import { LieuInput } from './LieuInput';
 import { TarifInput } from './TarifInput';
 import { FileUpload } from './FileUpload';
+import { Button } from '@mantine/core';
 
 // === Convertir Base64 → Hex ===
 const base64ToHex = (base64: string): string => {
@@ -106,8 +107,7 @@ export const NewEventForm = () => {
   return (
     <div className="container mx-auto pt-10 bg-white min-h-screen">
       <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-        <h2 className="text-lg font-semibold text-gray-700 mb-4">Nouvel événement</h2>
-        <p className="text-gray-500 mb-6">Créez un nouvel événement à venir</p>
+       
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* === Titre & Description === */}
@@ -240,12 +240,12 @@ export const NewEventForm = () => {
             >
               Annuler
             </Link>
-            <button
+            <Button variant="outline" color="red"
               type="submit"
-              className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+              // className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
             >
               Créer l'événement
-            </button>
+            </Button>
           </div>
         </form>
       </div>

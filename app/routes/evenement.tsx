@@ -61,12 +61,12 @@ export default function Evenement({loaderData}:Route.ComponentProps) {
   return (
     <Container size="md" p="100">
       
-      <Group mb="md">
+      {/* <Group mb="md">
         <Link to={"/event"} children={
           
   <Button
     leftSection={<IconArrowLeft size={18} />}
-    variant="default"
+    variant="light" color="red"
     // onClick={() => navigate(-1)}
   >
     Retour
@@ -75,7 +75,7 @@ export default function Evenement({loaderData}:Route.ComponentProps) {
 
         
         
-</Group>
+</Group> */}
         
       {/* <h1>Event number {loaderData.title} </h1> */}
 

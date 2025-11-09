@@ -1,4 +1,4 @@
-import { Button, Container, Flex, Text } from "@mantine/core";
+import { Button, Container, Flex, Text, Title } from "@mantine/core";
 import { Link } from "react-router";
 import { EventsGrid } from "~/components/EventsGrid";
 
@@ -18,11 +18,14 @@ export default function Evenements() {
      <Flex justify="space-between">
 
 
-      <Text color="red" size="md">Liste des évènements</Text>
+      <Title c="red" size="md">Liste des évènements</Title>
+       {/* <Button variant="outline" color='red' size="xl" radius="xl" className={classes.control}>
+          Se connecter
+        </Button> */}
 
       <Link to={"new"} children={
 
-      <Button color="rgb(79, 70, 229)" >+ Nouveau</Button>
+      <Button variant="outline" color="red" >+ Nouveau</Button>
       }></Link>
 
 

@@ -5,6 +5,8 @@ import classes from '../styles//HeaderSimple.module.css';
 import { FiLogOut } from "react-icons/fi";
 import { Form, Link, useLocation } from 'react-router';
 import { AddMenu } from './AddMenu';
+import {user} from "~/db/user";
+
 
 const links = [
   { link: '/about', label: 'Features' },
@@ -55,7 +57,7 @@ export function Header({isConnected}: {isConnected: boolean}) {
             </Modal>
       <Container size="md" className={classes.inner}>
         
-        <Link to="/" className={classes.title}>RENY Events <br /> <span className={classes.title_second}>Back office</span> </Link>
+        <Link to="/" className="text-xl font-bold text-red-600">RENY Events {user.isConnected ?  <div> <br /> <span className={classes.title_second}>Back office</span> </div> : null} </Link>
         { location === "/events" ? 
          <Group gap={3} >
           

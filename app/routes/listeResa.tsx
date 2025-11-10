@@ -9,7 +9,7 @@ export const loader = async ({params}:Route.LoaderArgs) => params.eventId
 
 export default function ListResa({loaderData}:Route.ComponentProps){
 
-    const {data, error, isPending} = useQueryGet(['resa'], "http://localhost:4000/v1/evenements/reservations/"+loaderData)
+    const {data, error, isPending} = useQueryGet(['resa'], "https://backend-reny-event.onrender.com/v1/evenements/reservations/"+loaderData)
     
     console.log(data)
 

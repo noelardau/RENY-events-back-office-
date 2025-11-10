@@ -2,11 +2,11 @@ import { useState } from 'react';
 import { Checkbox, Text, UnstyledButton } from '@mantine/core';
 import classes from '../styles/CheckboxCard.module.css';
 
-export function CheckboxResa({eventStat}) {
+export function CheckboxResa({eventStat, validateResa}) {
   const [value, onChange] = useState(eventStat != "en_attente");
 
   return (
-    <UnstyledButton onClick={() => onChange(!value)} className={classes.button}>
+    <UnstyledButton onClick={() =>{ onChange(!value); validateResa }} className={classes.button}>
       <Checkbox
         checked={value}
         onChange={() => {}}

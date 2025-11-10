@@ -10,7 +10,7 @@ export function TableResa({reservations}) {
   const [scrolled, setScrolled] = useState(false);
 
   const validateResa = async ( id:string) =>{
-      const res = await fetch(`http://localhost:4000/v1/reservations/validate/${id}`, {
+      const res = await fetch(`https://backend-reny-event.onrender.com/v1/reservations/validate/${id}`, {
         method: 'POST', body:null
       });
 
@@ -25,8 +25,8 @@ export function TableResa({reservations}) {
       <Table.Td>{row.email}</Table.Td>
       {/* <Table.Td>{row.etat_reservation == "en_attente" ? <Button onClick={e=>{ validateResa(row.reservation_id)}}>Valider resa</Button> : <Text color='green'>Validée</Text> }</Table.Td> */}
       <Table.Td>
-        <CheckboxResa eventStat={row.etat_reservation} />  
-
+        <CheckboxResa eventStat={row.etat_reservation} validateResa={validateResa(row.reservation_id)} />  
+   <button onClick={()=>validateResa(row.reservation_id)}>validate</button>
       </Table.Td>
     </Table.Tr>
   ));

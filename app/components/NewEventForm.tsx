@@ -81,7 +81,7 @@ export const NewEventForm = () => {
     console.log('Payload envoyé:', payload);
 
     try {
-      const response = await fetch('http://localhost:8080/v1/evenements', {
+      const response = await fetch('https://backend-reny-event.onrender.com/v1/evenements', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

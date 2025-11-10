@@ -36,7 +36,7 @@ export async function loader({params}:Route.LoaderArgs){
 export default function Evenement({loaderData}:Route.ComponentProps) {
 
   
-     const {error,data,isPending} = useQueryGet(['user'],"http://localhost:4000/v1/evenements/"+loaderData.eventId)
+     const {error,data,isPending} = useQueryGet(['user'],"https://backend-reny-event.onrender.com/v1/evenements/"+loaderData.eventId)
  
  
   if(error){

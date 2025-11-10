@@ -23,7 +23,7 @@ export function SingleEventCard({event}) {
   // ));
 
   
-  let {mutate, error, isPending} =  useQueryPost("http://localhost:4000/v1/reservations")
+  let {mutate, error, isPending} =  useQueryPost("https://backend-reny-event.onrender.com/v1/reservations")
   let saveResa = (newResa)=>{
     
   mutate(newResa)

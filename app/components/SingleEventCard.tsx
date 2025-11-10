@@ -1,5 +1,5 @@
 import { IconArrowLeft, IconEdit, IconList, IconTagPlus } from '@tabler/icons-react';
-import { Modal, Badge, Button, Card, Group, Image, Text, SimpleGrid, AspectRatio } from '@mantine/core';
+import { Modal, Badge, Button, Card, Group, Image, Text, SimpleGrid, AspectRatio, Flex } from '@mantine/core';
 import { StatEvent } from './StatEvent';
 import classes from '../styles/SingleEventCard.module.css';
 import { useState } from 'react';
@@ -7,11 +7,13 @@ import { ReservationForm } from './ReservationFrom';
 import { Link } from 'react-router';
 
 import { useQueryPost } from '~/hooks/useQueryPost';
+import event1 from "../assets/Foaran_ny_fetin_ny_reny.jpg"
 
 
 
 
-export function SingleEventCard({event}) {
+
+export function SingleEventCard({event, forUser}) {
   // const { image, title, description, country, badges } = mockdata;
 
   const [opened, setOpened] = useState(false);
@@ -48,8 +50,8 @@ export function SingleEventCard({event}) {
     <Card withBorder radius="md" className={classes.card}>
       <Card.Section className={classes.section} mt="md">
         <Group justify="apart">
-          <Link to={"/event"} >
-            <IconArrowLeft size={18} color='red' to={"/"} />
+          <Link to={forUser ? "/event" : "https://renyevents.vercel.app/"} >
+            <IconArrowLeft size={18} color='red'  />
           </Link>
           <Text fz="lg" fw={500}>
             {event.titre}
@@ -60,13 +62,16 @@ export function SingleEventCard({event}) {
         </Group>
         <Text fz="sm" mt="xs">
           {/* {event.description_evenement} */}
-          <p>Lorem ipsum dolor sit amet. Ut cupiditate sapiente id possimus eius eum ducimus perspiciatis sed magnam quaerat et porro cumque aut reiciendis laboriosam quo galisum nulla. Qui rerum nihil aut omnis internos et harum dolores qui nulla unde. </p><p>Cum accusantium sunt in quaerat enim cum iusto magni eum voluptatem voluptatem sed quidem unde nam eaque alias sed iste veniam. Eos dolorum asperiores et omnis pariatur non dolor sint sed excepturi voluptatem et laudantium dolore. </p>
+          <p>Lorem ipsum dolor sit amet. Ut cupiditate sapiente id possimus eius eum ducimus perspiciatis sed magnam quaerat et porro cumque aut reiciendis laboriosam quo galisum nulla. Qui rerum nihil aut omnis internos</p>
 
         </Text>
       </Card.Section>
       <Card.Section>
         <AspectRatio ratio={1920 / 1080}>
-                <Image src={'https://images.unsplash.com/photo-1527004013197-933c4bb611b3?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80'} h={250} />
+        <Flex justify="center" align="center" style={{ height: '100%' }}>
+
+                <Image src={event1} h={250} w={250}/>
+        </Flex>
               </AspectRatio>
       </Card.Section>
 
@@ -74,7 +79,17 @@ export function SingleEventCard({event}) {
       <Card.Section className={classes.section}>
         <StatEvent/>
       </Card.Section> */}
-
+{
+  !forUser  ?
+  
+  <SimpleGrid mt="xs" cols={{ base: 1}}>
+        <Button leftSection={
+          <IconTagPlus size={18} />
+        } radius="md" color='green' onClick={() => setOpened(true)} style={{ flex: 1 }}>
+          Faire une réservation
+        </Button>
+        
+      </SimpleGrid> :     
       <SimpleGrid mt="xs" cols={{ base: 1, sm: 3 }}>
         <Button leftSection={
           <IconTagPlus size={18} />
@@ -99,6 +114,8 @@ export function SingleEventCard({event}) {
           <IconHeart className={classes.like} stroke={1.5} />
           </ActionIcon> */}
       </SimpleGrid>
+}
+      
     </Card>
           </>
   );

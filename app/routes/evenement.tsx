@@ -8,11 +8,13 @@ import { useQueryGet } from "~/hooks/useQueryGet";
 import { Loader } from '@mantine/core';
 import { IconArrowLeft } from "@tabler/icons-react";
 import { Link } from "react-router";
+import {user} from "~/db/user";
 
 
 export async function loader({params}:Route.LoaderArgs){
 
   let id = params.eventId
+  let isConnected = user.isConnected
 
   
 
@@ -26,7 +28,8 @@ export async function loader({params}:Route.LoaderArgs){
   // }).then(r=>console.log(r?.getReader())).catch(err=> {throw err})
 
     return {
-      eventId: id
+      eventId: id,
+      isConnected: isConnected
     }
 }
 
@@ -79,7 +82,7 @@ export default function Evenement({loaderData}:Route.ComponentProps) {
         
       {/* <h1>Event number {loaderData.title} </h1> */}
 
-    <SingleEventCard event={data}/>
+    <SingleEventCard event={data} forUser={loaderData.isConnected}/>
     </Container>
   );
 }

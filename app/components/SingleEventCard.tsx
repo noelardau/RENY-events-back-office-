@@ -8,6 +8,7 @@ import { Link } from 'react-router';
 
 import { useQueryPost } from '~/hooks/useQueryPost';
 import event1 from "../assets/Foaran_ny_fetin_ny_reny.jpg"
+import { API_BASE_URL } from '~/constants/api';
 
 
 
@@ -25,7 +26,7 @@ export function SingleEventCard({event, forUser}) {
   // ));
 
   
-  let {mutate, error, isPending} =  useQueryPost("https://backend-reny-event.onrender.com/v1/reservations")
+  let {mutate, error, isPending} =  useQueryPost(API_BASE_URL+ "/reservations")
   let saveResa = (newResa)=>{
     
   mutate(newResa)

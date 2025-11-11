@@ -6,7 +6,7 @@ export function CheckboxResa({eventStat, validateResa}) {
   const [value, onChange] = useState(eventStat != "en_attente");
 
   return (
-    <UnstyledButton onClick={() =>{ onChange(!value); validateResa }} className={classes.button}>
+    <UnstyledButton onClick={() =>{ onChange(!value); }} className={classes.button}>
       <Checkbox
         checked={value}
         onChange={() => {}}

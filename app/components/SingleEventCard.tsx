@@ -9,12 +9,13 @@ import { Link } from 'react-router';
 import { useQueryPost } from '~/hooks/useQueryPost';
 import event1 from "../assets/Foaran_ny_fetin_ny_reny.jpg"
 import { API_BASE_URL } from '~/constants/api';
+import type { evenement } from '~/interfaces/evenement';
+import type { newReservation } from '~/interfaces/reservation';
 
 
 
 
-
-export function SingleEventCard({event, forUser}) {
+export function SingleEventCard({event , forUser}:{event:evenement, forUser?:boolean}) {
   // const { image, title, description, country, badges } = mockdata;
 
   const [opened, setOpened] = useState(false);
@@ -27,7 +28,7 @@ export function SingleEventCard({event, forUser}) {
 
   
   let {mutate, error, isPending} =  useQueryPost(API_BASE_URL+ "/reservations")
-  let saveResa = (newResa)=>{
+  let saveResa = (newResa:newReservation)=>{
     
   mutate(newResa)
 }
@@ -59,6 +60,7 @@ export function SingleEventCard({event, forUser}) {
           </Text>
           <Badge size="sm" variant="light">
             {event.type_evenement.type_evenement_nom}
+           
           </Badge>
         </Group>
         <Text fz="sm" mt="xs">

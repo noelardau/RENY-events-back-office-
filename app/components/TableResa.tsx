@@ -3,10 +3,11 @@ import cx from 'clsx';
 import { Button, ScrollArea, Table, Text } from '@mantine/core';
 import classes from '../styles/TableScrollArea.module.css';
 import { CheckboxResa } from './CheckBoxResa';
+import type { reservation } from '~/interfaces/reservation';
 
   
 
-export function TableResa({reservations}) {
+export function TableResa({reservations}:{reservations:reservation[]}) {
   const [scrolled, setScrolled] = useState(false);
 
   const validateResa = async ( id:string) =>{

@@ -17,3 +17,21 @@
 .scrolled {
   box-shadow: var(--mantine-shadow-sm);
 }
+.clickableRow {
+  transition: background-color 0.2s ease;
+}
+
+.rowLink {
+  display: block;
+  width: 100%;
+  padding: 8px 0;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.rowLink:hover {
+  background-color: var(--mantine-color-gray-1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}

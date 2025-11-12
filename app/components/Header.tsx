@@ -57,17 +57,15 @@ export function Header({isConnected}: {isConnected: boolean}) {
             </Modal>
       <Container size="md" className={classes.inner}>
         
-        <Link to="/" className="text-xl font-bold text-red-600">RENY Events {user.isConnected ?  <div> <br /> <span className={classes.title_second}>Back office</span> </div> : null} </Link>
-        { location === "/events" ? 
-         <Group gap={3} >
-          
-         <Form method='POST'>
-              <Input type='search' placeholder='rechercher un évènement' visibleFrom='xs'/> 
-         </Form>
-        </Group> 
-        : 
-        null
-     }
+        <Link to={isConnected ? "/" : "https://renyevents.vercel.app/" }className="text-xl font-bold text-red-600">RENY Events { 
+        isConnected ? 
+         <> <br /> <span className={classes.title_second}>Back office</span> </> 
+         : 
+         null} 
+        
+        </Link>
+        {/* <Link to="/" className="text-xl font-bold text-red-600">RENY Events <br /> <span className={classes.title_second}>Back office</span>  </Link>
+         */}
         
         { isConnected ? 
         //  <Group gap={3} visibleFrom="xs">

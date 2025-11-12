@@ -1,125 +1,219 @@
-import { IconArrowLeft, IconEdit, IconList, IconTagPlus } from '@tabler/icons-react';
-import { Modal, Badge, Button, Card, Group, Image, Text, SimpleGrid, AspectRatio, Flex } from '@mantine/core';
-import { StatEvent } from './StatEvent';
+import { IconArrowLeft, IconEdit, IconList, IconTagPlus, IconMapPin, IconCalendar, IconClock, IconTicket } from '@tabler/icons-react';
+import { Modal, Badge, Button, Card, Group, Image, Text, SimpleGrid, AspectRatio, Stack, Divider } from '@mantine/core';
+import { ReservationForm } from './ReservationFrom';
 import classes from '../styles/SingleEventCard.module.css';
 import { useState } from 'react';
-import { ReservationForm } from './ReservationFrom';
 import { Link } from 'react-router';
-
-import { useQueryPost } from '~/hooks/useQueryPost';
-import event1 from "../assets/Foaran_ny_fetin_ny_reny.jpg"
+import { useMutation } from '@tanstack/react-query';
 import { API_BASE_URL } from '~/constants/api';
 import type { evenement } from '~/interfaces/evenement';
 import type { newReservation } from '~/interfaces/reservation';
+import dayjs from 'dayjs';
+import 'dayjs/locale/fr';
+import event1 from "../assets/Foaran_ny_fetin_ny_reny.jpg";
+import { Notifications, notifications } from '@mantine/notifications';
+import '@mantine/notifications/styles.css';
+import { IconCheck, IconX } from '@tabler/icons-react';
 
+dayjs.locale('fr');
 
-
-
-export function SingleEventCard({event , forUser}:{event:evenement, forUser?:boolean}) {
-  // const { image, title, description, country, badges } = mockdata;
-
+export function SingleEventCard({ event, forUser }: { event: evenement; forUser?: boolean }) {
   const [opened, setOpened] = useState(false);
 
-  // const features = badges.map((badge) => (
-  //   <Badge variant="light" key={badge.label} leftSection={badge.emoji}>
-  //     {badge.label}
-  //   </Badge>
-  // ));
+  const mutation = useMutation({
+    mutationFn: (newResa: newReservation) =>
+      fetch(`${API_BASE_URL}/reservations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newResa),
+      }).then((res) => {
+        if (!res.ok) throw new Error('Échec de la réservation');
+        return res.json();
+      }),
 
-  
-  let {mutate, error, isPending} =  useQueryPost(API_BASE_URL+ "/reservations")
-  let saveResa = (newResa:newReservation)=>{
-    
-  mutate(newResa)
-}
+    onSuccess: () => {
+      setOpened(false); // Fermer le modal
+      notifications.show({
+        title: 'Réservation réussie !',
+        message: 'Votre place a été réservée avec succès.',
+        color: 'green',
+        icon: <IconCheck size={18} />,
+        autoClose: 5000,
+      });
+    },
 
+    onError: (error: any) => {
+      notifications.show({
+        title: 'Erreur',
+        message: error.message || 'Impossible de réserver. Veuillez réessayer.',
+        color: 'red',
+        icon: <IconX size={18} />,
+        autoClose: 5000,
+      });
+    },
+  });
 
-  return ( 
+  const saveResa = (newResa: newReservation) => {
+    mutation.mutate(newResa);
+  };
+
+  const eventImage = event.fichiers?.[0]?.fichier_url || event1;
+  const formatDate = (date: string) => dayjs(date).format('D MMMM YYYY');
+  const formatTime = (date: string) => dayjs(date).format('HH:mm');
+  const isSameDay = dayjs(event.date_debut).isSame(event.date_fin, 'day');
+
+  return (
     <>
-    <Modal
+    <Notifications position="bottom-right" />  {/* Ici ! */}
+      <Modal
         opened={opened}
-        onClose={() => setOpened(false)}
-        title="Réservez une ou plusieurs place"
+        onClose={() => !mutation.isPending && setOpened(false)}
+        title="Réserver une place"
         centered
+        closeOnClickOutside={!mutation.isPending}
       >
-       <div>
-
-        <ReservationForm evenement_id={event.evenement_id} onSubmit={saveResa}/>
-
-       </div>
-       
+        <ReservationForm
+          evenement_id={event.evenement_id}
+          onSubmit={saveResa}
+          loading={mutation.isPending}
+        />
       </Modal>
-    <Card withBorder radius="md" className={classes.card}>
-      <Card.Section className={classes.section} mt="md">
-        <Group justify="apart">
-          <Link to={forUser ? "/event" : "https://renyevents.vercel.app/"} >
-            <IconArrowLeft size={18} color='red'  />
-          </Link>
-          <Text fz="lg" fw={500}>
-            {event.titre}
+
+      <Card withBorder radius="md" className={classes.card} p="lg">
+        {/* === EN-TÊTE === */}
+        <Card.Section className={classes.section} mt="md">
+          <Group justify="apart" align="center">
+            <Link to={forUser ? '/event' : 'https://renyevents.vercel.app/'}>
+              <IconArrowLeft size={20} color="red" style={{ cursor: 'pointer' }} />
+            </Link>
+            <Text fz="xl" fw={700} style={{ flex: 1, textAlign: 'center' }}>
+              {event.titre}
+            </Text>
+            <Badge size="lg" variant="light" color="blue">
+              {event.type_evenement.type_evenement_nom}
+            </Badge>
+          </Group>
+        </Card.Section>
+
+        {/* === IMAGE === */}
+        <Card.Section mt="md">
+          <AspectRatio ratio={16 / 9}>
+            <Image
+              src={eventImage}
+              alt={event.titre}
+              radius="md"
+              fit="cover"
+              h="100%"
+            />
+          </AspectRatio>
+        </Card.Section>
+
+        {/* === DESCRIPTION === */}
+        <Card.Section className={classes.section} mt="md">
+          <Text size="sm" c="dimmed" mb="xs">Description</Text>
+          <Text size="md" style={{ whiteSpace: 'pre-wrap' }}>
+            {event.description_evenement || 'Aucune description fournie.'}
           </Text>
-          <Badge size="sm" variant="light">
-            {event.type_evenement.type_evenement_nom}
-           
-          </Badge>
-        </Group>
-        <Text fz="sm" mt="xs">
-          {/* {event.description_evenement} */}
-          <p>Lorem ipsum dolor sit amet. Ut cupiditate sapiente id possimus eius eum ducimus perspiciatis sed magnam quaerat et porro cumque aut reiciendis laboriosam quo galisum nulla. Qui rerum nihil aut omnis internos</p>
+        </Card.Section>
 
-        </Text>
-      </Card.Section>
-      <Card.Section>
-        <AspectRatio ratio={1920 / 1080}>
-        <Flex justify="center" align="center" style={{ height: '100%' }}>
+        <Divider my="md" />
 
-                <Image src={event1} h={250} w={250}/>
-        </Flex>
-              </AspectRatio>
-      </Card.Section>
+        {/* === INFOS CLÉS === */}
+        <Stack gap="xs" mt="md">
+          <Group gap="xs">
+            <IconCalendar size={18} />
+            <Text size="sm" fw={500}>
+              {isSameDay
+                ? `Le ${formatDate(event.date_debut)}`
+                : `Du ${formatDate(event.date_debut)} au ${formatDate(event.date_fin)}`}
+            </Text>
+          </Group>
+          <Group gap="xs">
+            <IconClock size={18} />
+            <Text size="sm">
+              De {formatTime(event.date_debut)} à {formatTime(event.date_fin)}
+            </Text>
+          </Group>
+          <Group gap="xs">
+            <IconMapPin size={18} />
+            <Text size="sm">
+              {event.lieu.lieu_nom} - {event.lieu.lieu_adresse}
+            </Text>
+          </Group>
+        </Stack>
 
-{/* 
-      <Card.Section className={classes.section}>
-        <StatEvent/>
-      </Card.Section> */}
-{
-  !forUser  ?
-  
-  <SimpleGrid mt="xs" cols={{ base: 1}}>
-        <Button leftSection={
-          <IconTagPlus size={18} />
-        } radius="md" color='green' onClick={() => setOpened(true)} style={{ flex: 1 }}>
-          Faire une réservation
-        </Button>
-        
-      </SimpleGrid> :     
-      <SimpleGrid mt="xs" cols={{ base: 1, sm: 3 }}>
-        <Button leftSection={
-          <IconTagPlus size={18} />
-        } radius="md" color='green' onClick={() => setOpened(true)} style={{ flex: 1 }}>
-          Faire une réservation
-        </Button>
-        <Button leftSection={
-          <IconList size={18} />
-        } radius="md" color='red' style={{ flex: 1 }}>
-       <Link  to={"/resa/"+ event.evenement_id} children={
-          <Text visibleFrom='sm'> Voir les réservations</Text>
+        <Divider my="md" />
 
-       }/>
-        </Button>
-        <Button leftSection={
-          <IconEdit className={classes.like} stroke={1.5} />
-        } 
-        radius="md" onClick={() => setOpened(true)} style={{ flex: 1 }}>
-       <Text visibleFrom='sm'> Modifier</Text>
-        </Button>
-        {/* <ActionIcon variant="default" radius="md" size={36}>
-          <IconHeart className={classes.like} stroke={1.5} />
-          </ActionIcon> */}
-      </SimpleGrid>
-}
-      
-    </Card>
-          </>
+        {/* === STATISTIQUES === */}
+        <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="xs" mt="md">
+          <div>
+            <Text size="xs" c="dimmed">Places totales</Text>
+            <Text fw={600}>{event.statistiques_globales.total_places}</Text>
+          </div>
+          <div>
+            <Text size="xs" c="dimmed">Disponibles</Text>
+            <Text fw={600} color="green">{event.statistiques_globales.places_disponibles}</Text>
+          </div>
+          <div>
+            <Text size="xs" c="dimmed">Vendues</Text>
+            <Text fw={600} color="orange">{event.statistiques_globales.places_vendues}</Text>
+          </div>
+          <div>
+            <Text size="xs" c="dimmed">Taux</Text>
+            <Text fw={600}>
+              {event.statistiques_globales.total_places > 0
+                ? `${Math.round((event.statistiques_globales.places_vendues / event.statistiques_globales.total_places) * 100)}%`
+                : '0%'}
+            </Text>
+          </div>
+        </SimpleGrid>
+
+        {/* === BOUTONS === */}
+        {forUser ? (
+          <SimpleGrid cols={{ base: 1, sm: 3 }} mt="xl" spacing="xs">
+            <Button
+              leftSection={<IconTagPlus size={18} />}
+              color="green"
+              onClick={() => setOpened(true)}
+              loading={mutation.isPending}
+              fullWidth
+            >
+              Réserver
+            </Button>
+            <Button
+              leftSection={<IconList size={18} />}
+              color="blue"
+              component={Link}
+              to={`/resa/${event.evenement_id}`}
+              fullWidth
+            >
+              <Text visibleFrom="sm">Réservations</Text>
+              <Text hiddenFrom="sm">Liste</Text>
+            </Button>
+            <Button
+              leftSection={<IconEdit size={18} />}
+              color="gray"
+              component={Link}
+              to={`/edit-event/${event.evenement_id}`}
+              fullWidth
+            >
+              <Text visibleFrom="sm">Modifier</Text>
+              <Text hiddenFrom="sm">Éditer</Text>
+            </Button>
+          </SimpleGrid>
+        ) : (
+          <Button
+            mt="xl"
+            fullWidth
+            leftSection={<IconTicket size={18} />}
+            color="green"
+            onClick={() => setOpened(true)}
+            loading={mutation.isPending}
+          >
+            Réserver une place
+          </Button>
+        )}
+      </Card>
+    </>
   );
 }

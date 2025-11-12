@@ -8,13 +8,14 @@ import { useQueryGet } from "~/hooks/useQueryGet";
 import { Loader } from '@mantine/core';
 import { IconArrowLeft } from "@tabler/icons-react";
 import { Link } from "react-router";
-import {user} from "~/db/user";
+
+import { useOutletContext } from "react-router";
 
 
 export async function loader({params}:Route.LoaderArgs){
 
   let id = params.eventId
-  let isConnected = user.isConnected
+
 
   
 
@@ -28,8 +29,7 @@ export async function loader({params}:Route.LoaderArgs){
   // }).then(r=>console.log(r?.getReader())).catch(err=> {throw err})
 
     return {
-      eventId: id,
-      isConnected: isConnected
+      eventId: id
     }
 }
 
@@ -40,7 +40,7 @@ export default function Evenement({loaderData}:Route.ComponentProps) {
 
   
      const {error,data,isPending} = useQueryGet(['user'],"https://backend-reny-event.onrender.com/v1/evenements/"+loaderData.eventId)
- 
+    const { forUser } = useOutletContext<{ forUser: boolean }>();
  
   if(error){
     return  <Container size="md" p="100">
@@ -82,7 +82,7 @@ export default function Evenement({loaderData}:Route.ComponentProps) {
         
       {/* <h1>Event number {loaderData.title} </h1> */}
 
-    <SingleEventCard event={data} forUser={loaderData.isConnected}/>
+    <SingleEventCard event={data} forUser={forUser}/>
     </Container>
   );
 }

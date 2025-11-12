@@ -24,6 +24,8 @@ type FormValues = {
 
 type ReservationFormProps = {
   evenement_id: string;
+  loading?: boolean;
+  disabled?: boolean;
   onSubmit?: (data: {
     email: string;
     evenement_id: string;
@@ -37,7 +39,7 @@ const TYPE_PLACES_OPTIONS = [
   { value: '8003a69b-98a2-4901-a655-91415d979382', label: 'Premium' },
 ];
 
-export function ReservationForm({ evenement_id, onSubmit }: ReservationFormProps) {
+export function ReservationForm({ evenement_id, onSubmit, loading, disabled }: ReservationFormProps) {
   const [entries, setEntries] = useState<number[]>([0]); // indices des lignes
 
   const form = useForm<FormValues>({

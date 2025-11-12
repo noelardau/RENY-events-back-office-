@@ -1,11 +1,12 @@
 import { Button, Container, Flex, Text, Title } from "@mantine/core";
 import { Link } from "react-router";
 import { EventsGrid } from "~/components/EventsGrid";
+import { routeProtection } from "~/utils/routeProtection";
 
 
 export async function loader(){
 
-  return 
+ routeProtection()
 
 
 

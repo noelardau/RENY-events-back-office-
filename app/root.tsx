@@ -65,11 +65,14 @@ export async function action({request}: Route.ActionArgs) {
 const queryClient = new QueryClient()
 
 export default function App({loaderData}: Route.ComponentProps) {
+
+  const forUser = loaderData.isConnected;
+
   return <div>
           <QueryClientProvider client={queryClient}>
 
-            <Header isConnected={loaderData.isConnected}></Header>
-            <Outlet />
+            <Header isConnected={forUser}></Header>
+            <Outlet context={{forUser}}/>
 
           </QueryClientProvider>
   </div> 

@@ -1,254 +1,326 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router';
-import { LieuInput } from './LieuInput';
-import { TarifInput } from './TarifInput';
-import { FileUpload } from './FileUpload';
-import { Button } from '@mantine/core';
+'use client';
 
-// === Convertir Base64 → Hex ===
-const base64ToHex = (base64: string): string => {
-  const base64Data = base64.replace(/^data:image\/[a-z]+;base64,/, '');
-  const binaryString = atob(base64Data);
-  let hex = '';
-  for (let i = 0; i < binaryString.length; i++) {
-    hex += binaryString.charCodeAt(i).toString(16).padStart(2, '0');
-  }
-  return hex.toUpperCase();
-};
+import { useState } from 'react';
+import {
+  TextInput,
+  Textarea,
+  NumberInput,
+  Button,
+  Group,
+  Box,
+  FileInput,
+  Card,
+  ActionIcon,
+  Stack,
+  Title,
+  Grid,
+  Paper,
+  Select,
+  Image,
+  Center,
+  Text,
+} from '@mantine/core';
+import '@mantine/dates/styles.css';
+import { useForm } from '@mantine/form';
+import { IconTrash, IconPlus, IconCalendar } from '@tabler/icons-react';
+import { notifications } from '@mantine/notifications'; // ← Ajouté
+import { DateTimePicker } from '@mantine/dates';
+import { format } from 'date-fns';
 
-// === Convertir date YYYY-MM-DD → ISO 8601 ===
-const formatDateToISO = (dateStr: string): string => {
-  if (!dateStr) return '';
-  return `${dateStr}T00:00:00Z`; // Minuit UTC
-};
+export function NewEventForm() {
+  const [loading, setLoading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-export const NewEventForm = () => {
-  const [form, setForm] = useState({
-    titre: '',
-    description: '',
-    date_debut: '',
-    date_fin: '',
-    type_id: '',
-    lieu_nom: '',
-    lieu_adresse: '',
-    lieu_ville: '',
-    lieu_capacite: '',
-    tarifs: [],
-    fichiers: [],
+  const type_evenement = [
+    { value: '0a65d96c-dcfa-49c6-a2dc-693f601235f1', label: 'Exposition' },
+    { value: '623ad257-4f7f-4054-a0b4-a53a829390e2', label: 'Foire' },
+  ];
+
+  const type_place = [
+    { value: '00ed40fb-bd03-44cb-b6ae-441321258588', label: 'Standard' },
+    { value: 'b72948c8-2c9f-487f-841f-07ca09df377c', label: 'VIP' },
+  ];
+
+  const form = useForm({
+    initialValues: {
+      titre: '',
+      description: '',
+      date_debut: null as Date | null,
+      date_fin: null as Date | null,
+      type_id: '',
+      lieu_nom: '',
+      lieu_adresse: '',
+      lieu_ville: '',
+      lieu_capacite: 0,
+      tarifs: [{ type_place_id: '', prix: 0, nombre_places: 0 }],
+      fichiers: [{ nom_fichier: '', type_mime: '', type_fichier: 'affiche', donnees_bytea: '' }],
+    },
+    validate: {
+      titre: (v) => (v?.trim() ? null : 'Requis'),
+      description: (v) => (v?.trim() ? null : 'Requis'),
+      date_debut: (v) => (v ? null : 'Requis'),
+      date_fin: (v, values) =>
+        v && values.date_debut && v > values.date_debut ? null : 'Doit être après le début',
+      type_id: (v) => (v ? null : 'Type requis'),
+      lieu_nom: (v) => (v?.trim() ? null : 'Requis'),
+      lieu_ville: (v) => (v?.trim() ? null : 'Requis'),
+      lieu_capacite: (v) => (v > 0 ? null : 'Invalide'),
+      tarifs: {
+        type_place_id: (v) => (v ? null : 'Requis'),
+        prix: (v) => (v > 0 ? null : 'Requis'),
+        nombre_places: (v) => (v > 0 ? null : 'Requis'),
+      },
+    },
   });
 
-  const navigate = useNavigate();
-
-  const handleChange = (field: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setForm((prev) => ({
-      ...prev,
-      [field]: e.target.value,
-    }));
+  const addTarif = () => {
+    form.setFieldValue('tarifs', [
+      ...form.values.tarifs,
+      { type_place_id: '', prix: 0, nombre_places: 0 },
+    ]);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const removeTarif = (index: number) => {
+    if (form.values.tarifs.length === 1) return;
+    form.setFieldValue(
+      'tarifs',
+      form.values.tarifs.filter((_, i) => i !== index)
+    );
+  };
 
-    // === 1. Formater les dates ===
-    const date_debut = formatDateToISO(form.date_debut);
-    const date_fin = formatDateToISO(form.date_fin);
-
-    if (!date_debut || !date_fin) {
-      alert('Veuillez sélectionner des dates valides');
+  const handleFileChange = (file: File | null) => {
+    if (!file) {
+      setImagePreview(null);
+      form.setFieldValue('fichiers.0', {
+        nom_fichier: '',
+        type_mime: '',
+        type_fichier: 'affiche',
+        donnees_bytea: '',
+      });
       return;
     }
 
-    // === 2. Convertir les fichiers en hex ===
-    const fichiersAvecHex = form.fichiers.map((f: any) => ({
-      ...f,
-      donnees_bytea: base64ToHex(f.donnees_bytea),
-    }));
+    const readerPreview = new FileReader();
+    readerPreview.onload = (e) => setImagePreview(e.target?.result as string);
+    readerPreview.readAsDataURL(file);
 
-    // === 3. Construire le payload ===
+    const readerHex = new FileReader();
+    readerHex.onload = (e) => {
+      const arrayBuffer = e.target?.result as ArrayBuffer;
+      const hex = Array.from(new Uint8Array(arrayBuffer))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('');
+      form.setFieldValue('fichiers.0', {
+        nom_fichier: file.name,
+        type_mime: file.type || 'application/octet-stream',
+        type_fichier: 'affiche',
+        donnees_bytea: hex,
+      });
+    };
+    readerHex.readAsArrayBuffer(file);
+  };
+
+  const toISO = (date: Date | null): string | null => {
+    if (!date) return null;
+    return format(date, "yyyy-MM-dd'T'HH:mm:ss'Z'");
+  };
+
+  const handleSubmit = async (values: typeof form.values) => {
+    setLoading(true);
+
     const payload = {
-      ...form,
-      date_debut,
-      date_fin,
-      lieu_capacite: parseInt(form.lieu_capacite, 10) || 0,
-      tarifs: form.tarifs.map((t: any) => ({
-        ...t,
-        prix: Number(t.prix),
-        nombre_places: Number(t.nombre_places),
-      })),
-      fichiers: fichiersAvecHex,
+      ...values,
+      date_debut: toISO(values.date_debut),
+      date_fin: toISO(values.date_fin),
     };
 
-    console.log('Payload envoyé:', payload);
-
     try {
-      const response = await fetch('https://backend-reny-event.onrender.com/v1/evenements', {
+      const response = await fetch('http://localhost:3000/v1/evenements', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`HTTP ${response.status}: ${errorText}`);
-      }
+      if (response.ok) {
+        const result = await response.json();
+        console.log(payload)
 
-      const data = await response.json();
-      console.log('Succès:', data);
-      alert('Événement créé !');
-      // navigate('/events');
-    } catch (error: any) {
-      console.error('Erreur:', error);
-      alert('Erreur : ' + error.message);
+        notifications.show({
+          title: 'Événement créé !',
+          message: `${values.titre} a été ajouté avec succès.`,
+          color: 'green',
+          icon: <IconPlus size={18} />,
+        });
+
+        form.reset();
+        setImagePreview(null);
+      } else {
+        const err = await response.json();
+        console.log(payload)
+
+        notifications.show({
+          title: 'Échec de création',
+          message: err.error || 'Une erreur est survenue.',
+          color: 'red',
+        });
+      }
+    } catch (err) {
+      notifications.show({
+        title: 'Erreur réseau',
+        message: 'Impossible de contacter le serveur. Vérifiez votre connexion.',
+        color: 'red',
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="container mx-auto pt-10 bg-white min-h-screen">
-      <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-       
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* === Titre & Description === */}
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="titre" className="block text-sm font-medium text-gray-700">
-                Titre de l'événement
-              </label>
-              <input
-                type="text"
-                id="titre"
-                value={form.titre}
-                onChange={handleChange('titre')}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                required
-              />
-            </div>
-
-            <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-                Description
-              </label>
-              <textarea
-                id="description"
-                value={form.description}
-                onChange={handleChange('description')}
-                rows={3}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                required
-              />
-            </div>
-          </div>
-
-          {/* === Type & Dates === */}
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div>
-              <label htmlFor="type_id" className="block text-sm font-medium text-gray-700">
-                Type d'événement
-              </label>
-              <select
-                id="type_id"
-                value={form.type_id}
-                onChange={handleChange('type_id')}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                required
-              >
-                <option value="">Sélectionnez un type</option>
-                <option value="b688869b-f36f-4fad-bcd9-27fe25785ecb">Conférence</option>
-                <option value="autre-uuid">Concert</option>
-              </select>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label htmlFor="date_debut" className="block text-sm font-medium text-gray-700">
-                  Date de début
-                </label>
-                <input
-                  type="date"
-                  id="date_debut"
-                  value={form.date_debut}
-                  onChange={handleChange('date_debut')}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+    <Box p="md" maw={900} mx="auto">
+      <form onSubmit={form.onSubmit(handleSubmit)}>
+        <Paper p="lg" shadow="sm" withBorder>
+          <Stack gap="md">
+            {/* Titre + Type */}
+            <Grid>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <TextInput label="Titre" placeholder="Foire 2026" required {...form.getInputProps('titre')} />
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <Select
+                  label="Type d'événement"
+                  placeholder="Sélectionner..."
+                  data={type_evenement}
                   required
+                  {...form.getInputProps('type_id')}
                 />
-              </div>
+              </Grid.Col>
+            </Grid>
 
-              <div>
-                <label htmlFor="date_fin" className="block text-sm font-medium text-gray-700">
-                  Date de fin
-                </label>
-                <input
-                  type="date"
-                  id="date_fin"
-                  value={form.date_fin}
-                  onChange={handleChange('date_fin')}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            <Textarea
+              label="Description"
+              placeholder="Décrivez l'événement..."
+              required
+              minRows={3}
+              {...form.getInputProps('description')}
+            />
+
+            {/* Dates */}
+            <Grid>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <DateTimePicker
+                  label="Date de début"
+                  placeholder="15/07/2026 20:00"
                   required
+                  valueFormat="DD MMM YYYY à HH:mm"
+                  leftSection={<IconCalendar size={16} />}
+                  popoverProps={{ withinPortal: true }}
+                  {...form.getInputProps('date_debut')}
                 />
-              </div>
-            </div>
-          </div>
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <DateTimePicker
+                  label="Date de fin"
+                  placeholder="15/07/2026 23:30"
+                  required
+                  valueFormat="DD MMM YYYY à HH:mm"
+                  leftSection={<IconCalendar size={16} />}
+                  popoverProps={{ withinPortal: true }}
+                  {...form.getInputProps('date_fin')}
+                />
+              </Grid.Col>
+            </Grid>
 
-          {/* === Lieu === */}
-          <div className="border-t border-gray-200 pt-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Lieu de l'événement</h3>
-            <LieuInput
-              value={{
-                nom: form.lieu_nom,
-                adresse: form.lieu_adresse,
-                ville: form.lieu_ville,
-                capacite: form.lieu_capacite,
-              }}
-              onChange={(lieu) =>
-                setForm((prev) => ({
-                  ...prev,
-                  lieu_nom: lieu.nom,
-                  lieu_adresse: lieu.adresse,
-                  lieu_ville: lieu.ville,
-                  lieu_capacite: lieu.capacite,
-                }))
-              }
-            />
-          </div>
+            {/* Lieu */}
+            <Title order={4} mt="lg">Lieu</Title>
+            <Grid>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <TextInput label="Nom" placeholder="Stade Barea" required {...form.getInputProps('lieu_nom')} />
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, md: 6 }}>
+                <TextInput label="Ville" placeholder="Antananarivo" required {...form.getInputProps('lieu_ville')} />
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, md: 8 }}>
+                <TextInput label="Adresse" placeholder="Mahamasina..." required {...form.getInputProps('lieu_adresse')} />
+              </Grid.Col>
+              <Grid.Col span={{ base: 12, md: 4 }}>
+                <NumberInput label="Capacité" placeholder="5000" required min={1} {...form.getInputProps('lieu_capacite')} />
+              </Grid.Col>
+            </Grid>
 
-          {/* === Tarifs === */}
-          <div className="border-t border-gray-200 pt-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Tarifs</h3>
-            <TarifInput
-              value={form.tarifs}
-              onChange={(tarifs) => setForm((prev) => ({ ...prev, tarifs }))}
-            />
-          </div>
-
-          {/* === Image === */}
-          <div className="border-t border-gray-200 pt-6">
-            <h3 className="text-lg font-medium text-gray-900 mb-4">Image de l'événement</h3>
-            <FileUpload
-              onFileChange={(filesArray) =>
-                setForm((prev) => ({ ...prev, fichiers: filesArray || [] }))
-              }
-            />
-          </div>
-
-          {/* === Boutons === */}
-          <div className="flex justify-end space-x-4 pt-6">
-            <Link
-              to="/event"
-              className="inline-flex justify-center rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >
-              Annuler
-            </Link>
-            <Button variant="outline" color="red"
-              type="submit"
-              // className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-            >
-              Créer l'événement
+            {/* Tarifs */}
+            <Title order={4} mt="lg">Tarifs</Title>
+            {form.values.tarifs.map((_, index) => (
+              <Card key={index} withBorder p="sm">
+                <Grid align="end">
+                  <Grid.Col span={{ base: 12, md: 5 }}>
+                    <Select
+                      label="Type de place"
+                      placeholder="Choisir..."
+                      data={type_place}
+                      required
+                      {...form.getInputProps(`tarifs.${index}.type_place_id`)}
+                    />
+                  </Grid.Col>
+                  <Grid.Col span={{ base: 12, md: 3 }}>
+                    <NumberInput label="Prix (Ar)" placeholder="750" required min={0} {...form.getInputProps(`tarifs.${index}.prix`)} />
+                  </Grid.Col>
+                  <Grid.Col span={{ base: 12, md: 3 }}>
+                    <NumberInput label="Places" placeholder="2000" required min={1} {...form.getInputProps(`tarifs.${index}.nombre_places`)} />
+                  </Grid.Col>
+                  <Grid.Col span={{ base: 12, md: 1 }}>
+                    <ActionIcon
+                      color="red"
+                      variant="subtle"
+                      onClick={() => removeTarif(index)}
+                      disabled={form.values.tarifs.length === 1}
+                    >
+                      <IconTrash size={16} />
+                    </ActionIcon>
+                  </Grid.Col>
+                </Grid>
+              </Card>
+            ))}
+            <Button leftSection={<IconPlus size={16} />} variant="light" onClick={addTarif}>
+              Ajouter un tarif
             </Button>
-          </div>
-        </form>
-      </div>
-    </div>
+
+            {/* Affiche + Preview */}
+            <Title order={4} mt="lg">Affiche</Title>
+            <FileInput
+              label="Téléverser l'affiche"
+              placeholder="JPG, PNG..."
+              accept="image/jpeg,image/png"
+              onChange={handleFileChange}
+            />
+            {imagePreview ? (
+              <Card withBorder p="sm">
+                <Text size="sm" fw={500} mb="xs">Prévisualisation :</Text>
+                <Center>
+                  <Image
+                    src={imagePreview}
+                    alt="Affiche"
+                    radius="md"
+                    mah={300}
+                    fit="contain"
+                    style={{ border: '1px solid #ddd' }}
+                  />
+                </Center>
+              </Card>
+            ) : form.values.fichiers[0]?.nom_fichier ? (
+              <Text size="sm" c="dimmed" ta="center">
+                Aucune image sélectionnée
+              </Text>
+            ) : null}
+
+            {/* Submit */}
+            <Group justify="flex-end" mt="xl">
+              <Button type="submit" loading={loading} color="blue">
+                Créer l'événement
+              </Button>
+            </Group>
+          </Stack>
+        </Paper>
+      </form>
+    </Box>
   );
-};
+}

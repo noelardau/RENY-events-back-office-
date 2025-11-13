@@ -36,10 +36,10 @@ type ReservationFormProps = {
 };
 
 const TYPE_PLACES_OPTIONS = [
-  { value: "00a7f4e3-b1a5-4f70-8360-98ecf926bafc", label: 'Standard' },
-  { value: "00ed40fb-bd03-44cb-b6ae-441321258588", label: 'VIP' },
-  { value: "b72948c8-2c9f-487f-841f-07ca09df377c", label: 'Premium' },
+  { value: "00ed40fb-bd03-44cb-b6ae-441321258588", label: 'Standard' },
+  { value: "b72948c8-2c9f-487f-841f-07ca09df377c", label: 'VIP'  },
 ];
+
 
 export function ReservationForm({
   evenement_id,

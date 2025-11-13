@@ -16,13 +16,13 @@ export async function loader({ request }: Route.LoaderArgs) {
   // Liste complète des événements
   const allEvents = [
     {
-      id: "ff741457-de4f-4408-b311-0350eaba674c",
+      id: "5999f878-5a3b-4351-951d-b600abf4dd1f",
       title: "Foire fête des mères",
       image: event1,
       date: "August 18, 2022",
     },
     {
-      id: 3,
+      id:"fec4c386-7722-4fd0-aded-d18a8cbec20e",
       title: "Best forests to visit in North America",
       image:
         "https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80",
@@ -75,7 +75,7 @@ export default function Evenements({ loaderData }: Route.ComponentProps) {
   };
 
   return (
-    <Container size="md" my="md" pb={50}>
+    <Container size="md" my="md" py={100} pb={50}>
       <Flex justify="space-between" align="center" mb="lg">
         <Title c="red" size="h3">
           Liste des évènements

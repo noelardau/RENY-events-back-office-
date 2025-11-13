@@ -17,6 +17,7 @@ import { Link } from "react-router";
 import { IconArrowLeft, IconFilter, IconCheck, IconClock } from "@tabler/icons-react";
 import { routeProtection } from "~/utils/routeProtection";
 import { useState } from "react";
+import { API_BASE_URL } from "~/constants/api";
 
 export const loader = async ({ params }: Route.LoaderArgs) => {
   routeProtection();
@@ -26,7 +27,7 @@ export const loader = async ({ params }: Route.LoaderArgs) => {
 export default function ListResa({ loaderData }: Route.ComponentProps) {
   const { data, error, isPending } = useQueryGet(
     ["resa", loaderData],
-    "https://backend-reny-event.onrender.com/v1/evenements/reservations/" + loaderData
+    API_BASE_URL+"/evenements/reservations/" + loaderData
   );
 
   const [filter, setFilter] = useState<"all" | "en_attente" | "payee">("all");

@@ -11,6 +11,7 @@ import { Link } from "react-router";
 
 import { useOutletContext } from "react-router";
 
+import { API_BASE_URL } from "~/constants/api";
 
 export async function loader({params}:Route.LoaderArgs){
 
@@ -37,9 +38,10 @@ export async function loader({params}:Route.LoaderArgs){
 
 
 export default function Evenement({loaderData}:Route.ComponentProps) {
+      
 
-  
-     const {error,data,isPending} = useQueryGet(['user'],"https://backend-reny-event.onrender.com/v1/evenements/"+loaderData.eventId)
+
+     const {error,data,isPending} = useQueryGet(['user',loaderData.eventId],API_BASE_URL + "/evenements/"+loaderData.eventId)
     const { forUser } = useOutletContext<{ forUser: boolean }>();
  
   if(error){

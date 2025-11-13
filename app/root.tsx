@@ -20,6 +20,7 @@ import {
 
 import type { Route } from "./+types/root";
 import { deconectUser, user } from './db/user';
+import { Notifications } from '@mantine/notifications';
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -72,6 +73,7 @@ export default function App({loaderData}: Route.ComponentProps) {
           <QueryClientProvider client={queryClient}>
 
             <Header isConnected={forUser}></Header>
+             <Notifications position="bottom-right" /> 
             <Outlet context={{forUser}}/>
 
           </QueryClientProvider>

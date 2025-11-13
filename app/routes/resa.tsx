@@ -3,7 +3,6 @@ import { useQueryGet } from "~/hooks/useQueryGet";
 import { API_BASE_URL } from "~/constants/api";
 import { Container } from "@mantine/core";
 import ReservationCard from "~/components/ReservationCard";
-import {user} from "~/db/user";
 import { useOutletContext } from "react-router";
 
 

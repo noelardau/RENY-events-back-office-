@@ -11,7 +11,7 @@ import type { newReservation } from '~/interfaces/reservation';
 import dayjs from 'dayjs';
 import 'dayjs/locale/fr';
 import event1 from "../assets/Foaran_ny_fetin_ny_reny.jpg";
-import { Notifications, notifications } from '@mantine/notifications';
+import {  notifications } from '@mantine/notifications';
 import '@mantine/notifications/styles.css';
 import { IconCheck, IconX } from '@tabler/icons-react';
 
@@ -64,7 +64,7 @@ export function SingleEventCard({ event, forUser }: { event: evenement; forUser?
 
   return (
     <>
-    <Notifications position="bottom-right" />  {/* Ici ! */}
+   
       <Modal
         opened={opened}
         onClose={() => !mutation.isPending && setOpened(false)}

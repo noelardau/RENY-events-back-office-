@@ -1,32 +1,30 @@
 import { useState } from 'react';
-import cx from 'clsx';
 import {
-  ScrollArea,
-  Table,
-  Text,
-  UnstyledButton,
-  Loader,
-  Group,
-  Badge,
   Card,
   Stack,
-  ActionIcon,
-  useMantineTheme,
-  Box,
+  Group,
+  Text,
+  Badge,
   Button,
+  ActionIcon,
+  Loader,
   Flex,
+  Box,
+  useMantineTheme,
 } from '@mantine/core';
 import { useMediaQuery } from '@mantine/hooks';
-import classes from '../styles/TableScrollArea.module.css';
-import type { reservation } from '~/interfaces/reservation';
 import { Link } from 'react-router';
 import { IconCheck, IconClock, IconMail, IconId } from '@tabler/icons-react';
+import type { reservation } from '~/interfaces/reservation';
+import { useQueryClient } from '@tanstack/react-query';
+import { notifications} from '@mantine/notifications';
 
 export function TableResa({ reservations }: { reservations: reservation[] }) {
   const theme = useMantineTheme();
   const isMobile = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`);
-  const [scrolled, setScrolled] = useState(false);
   const [validatingIds, setValidatingIds] = useState<Set<string>>(new Set());
+
+  const queryClient = useQueryClient();
 
   const validateResa = async (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -37,151 +35,106 @@ export function TableResa({ reservations }: { reservations: reservation[] }) {
       const res = await fetch(`http://localhost:3000/v1/reservations/validate/${id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
       });
 
-      if (!res.ok) throw new Error('Échec validation');
-      // Optionnel : rafraîchir via queryClient
+      if (!res.ok) throw new Error('Échec de la validation');
+      // Optionnel : rafraîchir via invalidateQueries()
     } catch (error) {
-      console.error('Erreur:', error);
+      console.error('Erreur validation:', error);
+      // Optionnel : notification d'erreur
     } finally {
       setValidatingIds((prev) => {
         const next = new Set(prev);
         next.delete(id);
+        notifications.clean();
+        notifications.show({
+          title: 'Réservation validée !',
+          message: 'La resa a été validéé.',
+                color: 'green',
+                icon: <IconCheck size={18} />,
+                autoClose: 5000,
+              });
+              queryClient.invalidateQueries({queryKey:['resa']});
         return next;
       });
     }
   };
 
-  // === Vue Mobile : Cartes ===
-  const MobileView = () => (
+  return (
     <Stack gap="md" mt={20}>
+     
       {reservations.map((row) => {
         const isValidating = validatingIds.has(row.reservation_id);
         const isPending = row.etat_reservation === 'en_attente';
+
 
         return (
           <Card
             key={row.reservation_id}
             withBorder
             radius="md"
-            p="md"
-            className={classes.clickableRow}
+            p={isMobile ? 'sm' : 'md'}
+            shadow="sm"
             component={Link}
             to={row.reservation_id}
-            onClick={(e) => isValidating && e.preventDefault()}
-            style={{ pointerEvents: isValidating ? 'none' : 'auto' }}
+            style={{
+              pointerEvents: isValidating ? 'none' : 'auto',
+              opacity: isValidating ? 0.7 : 1,
+              transition: 'opacity 0.2s',
+            }}
+            className="hover:shadow-md transition-shadow"
           >
-            <Stack gap="xs">
-              {/* ID + État */}
-              <Flex justify="space-between" align="center">
-                <Group gap="xs">
+            <Flex
+              direction={isMobile ? 'column' : 'row'}
+              justify="space-between"
+              align={isMobile ? 'stretch' : 'center'}
+              gap="sm"
+            >
+              {/* Gauche : ID + Email */}
+              <Box flex={1}>
+                <Group gap="xs" wrap="nowrap">
                   <IconId size={16} color="gray" />
                   <Text size="sm" fw={600} truncate>
-                    {row.reservation_id.slice(0, 8)}
+                    {row.reservation_id.slice(0, 8)}...
                   </Text>
                 </Group>
+                <Group gap="xs" mt={4}>
+                  <IconMail size={16} color="gray" />
+                  <Text size="sm" c="dimmed" truncate>
+                    {row.email}
+                  </Text>
+                </Group>
+              </Box>
 
+              {/* Droite : Badge + Bouton */}
+              <Group gap="xs" align="center" wrap="nowrap">
                 <Badge
                   color={isPending ? 'orange' : 'green'}
                   variant="light"
-                  size="sm"
+                  size={isMobile ? 'sm' : 'md'}
                   leftSection={isPending ? <IconClock size={14} /> : <IconCheck size={14} />}
                 >
                   {isPending ? 'En attente' : 'Validée'}
                 </Badge>
-              </Flex>
 
-              {/* Email */}
-              <Group gap="xs">
-                <IconMail size={16} color="gray" />
-                <Text size="sm" truncate>{row.email}</Text>
+                {isPending && (
+                  <Button
+                    size="xs"
+                    color="green"
+                    onClick={(e) => validateResa(row.reservation_id, e)}
+                    loading={isValidating}
+                    loaderProps={{ type: 'dots' }}
+                    disabled={isValidating}
+                    leftSection={isValidating ? null : <IconCheck size={14} />}
+                  >
+                    {isValidating ? 'Validation...' : 'Valider'}
+                  </Button>
+                )}
               </Group>
-
-              {/* Bouton Valider */}
-              {isPending && (
-                <Button
-                  size="xs"
-                  color="green"
-                  onClick={(e) => validateResa(row.reservation_id, e)}
-                  loading={isValidating}
-                  loaderProps={{ type: 'dots' }}
-                  fullWidth
-                  mt="xs"
-                >
-                  {isValidating ? 'Validation...' : 'Valider la réservation'}
-                </Button>
-              )}
-            </Stack>
+            </Flex>
           </Card>
         );
       })}
     </Stack>
   );
-
-  // === Vue Desktop : Tableau ===
-  const DesktopView = () => (
-    <ScrollArea
-      mt={20}
-      h={300}
-      onScrollPositionChange={({ y }) => setScrolled(y !== 0)}
-    >
-      <Table miw={700} verticalSpacing="sm">
-        <Table.Thead className={cx(classes.header, { [classes.scrolled]: scrolled })}>
-          <Table.Tr>
-            <Table.Th>ID Réservation</Table.Th>
-            <Table.Th>Email</Table.Th>
-            <Table.Th>État</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {reservations.map((row) => {
-            const isValidating = validatingIds.has(row.reservation_id);
-
-            return (
-              <Table.Tr key={row.reservation_id} className={classes.clickableRow}>
-                <Table.Td colSpan={3}>
-                  <UnstyledButton
-                    component={Link}
-                    to={row.reservation_id}
-                    className={classes.rowLink}
-                    onClick={(e) => isValidating && e.preventDefault()}
-                    style={{ pointerEvents: isValidating ? 'none' : 'auto' }}
-                  >
-                    <Group justify="space-between" wrap="nowrap" align="center" w="100%">
-                      <Text size="sm" fw={500}>
-                        {row.reservation_id.slice(0, 8)}
-                      </Text>
-                      <Text size="sm" c="dimmed" truncate>
-                        {row.email}
-                      </Text>
-
-                      {row.etat_reservation === 'en_attente' ? (
-                        <Button
-                          size="xs"
-                          color="green"
-                          onClick={(e) => validateResa(row.reservation_id, e)}
-                          disabled={isValidating}
-                          loading={isValidating}
-                          loaderProps={{ type: 'dots' }}
-                        >
-                          {isValidating ? 'Validation...' : 'Valider'}
-                        </Button>
-                      ) : (
-                        <Text size="sm" c="green" fw={500}>
-                          Validée
-                        </Text>
-                      )}
-                    </Group>
-                  </UnstyledButton>
-                </Table.Td>
-              </Table.Tr>
-            );
-          })}
-        </Table.Tbody>
-      </Table>
-    </ScrollArea>
-  );
-
-  return <Box>{isMobile ? <MobileView /> : <DesktopView />}</Box>;
 }

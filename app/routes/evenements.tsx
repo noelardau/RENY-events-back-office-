@@ -16,7 +16,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   // Liste complète des événements
   const allEvents = [
     {
-      id: "5999f878-5a3b-4351-951d-b600abf4dd1f",
+      id: "0ccee9c2-3e71-4e0a-aa2c-f5e16fea4f4b",
       title: "Foire fête des mères",
       image: event1,
       date: "August 18, 2022",

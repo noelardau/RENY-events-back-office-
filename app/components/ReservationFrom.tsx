@@ -11,6 +11,8 @@ import {
 } from '@mantine/core';
 import { IconTrash } from '@tabler/icons-react';
 import { useState, useEffect } from 'react';
+// import {type_place} from "~/constants/app";
+import type { evenement } from '~/interfaces/evenement';
 
 type PlaceDemandee = {
   type_place_id: string;
@@ -24,6 +26,7 @@ type FormValues = {
 };
 
 type ReservationFormProps = {
+  event: evenement;
   evenement_id: string;
   loading?: boolean;
   disabled?: boolean;
@@ -35,19 +38,20 @@ type ReservationFormProps = {
   }) => void;
 };
 
-const TYPE_PLACES_OPTIONS = [
-  { value: "00ed40fb-bd03-44cb-b6ae-441321258588", label: 'Standard' },
-  { value: "b72948c8-2c9f-487f-841f-07ca09df377c", label: 'VIP'  },
-];
 
 
 export function ReservationForm({
-  evenement_id,
+  event,
   onSubmit,
   loading,
   disabled,
 }: ReservationFormProps) {
   const [entries, setEntries] = useState<number[]>([0]); // indices des lignes
+
+  const type_place = event.tarifs_et_places.map((tp) => ({
+    value: tp.type_place_id,
+    label: `${tp.type_place_nom}`,
+  }));
 
   const form = useForm<FormValues>({
     initialValues: {
@@ -117,7 +121,7 @@ export function ReservationForm({
     const data = {
       email: values.email,
       reference_paiement: values.reference_paiement.trim(),
-      evenement_id,
+      evenement_id: event.evenement_id,
       places_demandees: validPlaces,
     };
 
@@ -131,6 +135,7 @@ export function ReservationForm({
 
   return (
     <Box component="form" onSubmit={form.onSubmit(handleSubmit)} maw={500}>
+      
       <Stack gap="md">
         <TextInput
           label="Email"
@@ -146,7 +151,7 @@ export function ReservationForm({
             <Select
               label={index === 0 ? 'Type de place' : ''}
               placeholder="Choisir un type"
-              data={TYPE_PLACES_OPTIONS}
+              data={type_place}
               withAsterisk={index === 0}
               {...form.getInputProps(`places_demandees.${index}.type_place_id`)}
               onChange={(value) => {

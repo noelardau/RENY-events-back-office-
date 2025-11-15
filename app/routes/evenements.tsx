@@ -4,8 +4,9 @@ import { EventsGrid } from "~/components/EventsGrid";
 import { routeProtection } from "~/utils/routeProtection";
 import event1 from "../assets/Foaran_ny_fetin_ny_reny.jpg";
 import type { Route } from "./+types/evenements";
+import { Id_event_added } from "~/constants/app";
 
-const ITEMS_PER_PAGE = 3;
+const ITEMS_PER_PAGE = 4;
 
 export async function loader({ request }: Route.LoaderArgs) {
   routeProtection();
@@ -16,7 +17,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   // Liste complète des événements
   const allEvents = [
     {
-      id: "5999f878-5a3b-4351-951d-b600abf4dd1f",
+      id: Id_event_added,
       title: "Foire fête des mères",
       image: event1,
       date: "August 18, 2022",

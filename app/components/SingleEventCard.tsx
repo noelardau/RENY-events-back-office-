@@ -5,7 +5,7 @@ import classes from '../styles/SingleEventCard.module.css';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { useMutation } from '@tanstack/react-query';
-import { API_BASE_URL } from '~/constants/api';
+import { api_paths } from '~/constants/api';
 import type { evenement } from '~/interfaces/evenement';
 import type { newReservation } from '~/interfaces/reservation';
 import dayjs from 'dayjs';
@@ -22,7 +22,7 @@ export function SingleEventCard({ event, forUser }: { event: evenement; forUser?
 
   const mutation = useMutation({
     mutationFn: (newResa: newReservation) =>
-      fetch(`${API_BASE_URL}/reservations`, {
+      fetch(`${api_paths.createReservation}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newResa),
@@ -74,6 +74,7 @@ export function SingleEventCard({ event, forUser }: { event: evenement; forUser?
       >
         <ReservationForm
           evenement_id={event.evenement_id}
+          event={event}
           onSubmit={saveResa}
           loading={mutation.isPending}
         />

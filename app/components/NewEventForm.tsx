@@ -27,19 +27,26 @@ import { notifications } from '@mantine/notifications'; // ← Ajouté
 import { DateTimePicker } from '@mantine/dates';
 import { format } from 'date-fns';
 
+import { type_evenement, type_place } from '../constants/app';
+import { api_paths } from '~/constants/api';
+
+import { useQueryGet } from '~/hooks/useQueryGet';
+
 export function NewEventForm() {
   const [loading, setLoading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
-  const type_evenement = [
-    { value: '0a65d96c-dcfa-49c6-a2dc-693f601235f1', label: 'Exposition' },
-    { value: '623ad257-4f7f-4054-a0b4-a53a829390e2', label: 'Foire' },
-  ];
+  let typePlaceData = useQueryGet(['type_place'], api_paths.getTypePlace);
+  let typeEventData = useQueryGet(['type_evenement'], api_paths.getTypeEvenement);
 
-  const type_place = [
-    { value: '00ed40fb-bd03-44cb-b6ae-441321258588', label: 'Standard' },
-    { value: 'b72948c8-2c9f-487f-841f-07ca09df377c', label: 'VIP' },
-  ];
+  console.log("typePlaceData.data");
+  console.log(typePlaceData.data);
+  console.log("typeEventData.data");
+  console.log(typeEventData.data);
+
+  let type_evenement = typeEventData.data?.map((te:any) => ({ value: te.id.toString(), label: te.nom })) || [];
+  let type_place = typePlaceData.data?.map((tp:any) => ({ value: tp.id.toString(), label: tp.nom })) || [];
+
 
   const form = useForm({
     initialValues: {
@@ -135,7 +142,7 @@ export function NewEventForm() {
     };
 
     try {
-      const response = await fetch('http://localhost:3000/v1/evenements', {
+      const response = await fetch(api_paths.createEvenement, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

@@ -18,15 +18,16 @@ export function loader({params}: Route.LoaderArgs) {
 
 export default function Resa({loaderData}: Route.ComponentProps) {
 
-  const { data,error,isPending } = useQueryGet(["resa", "one"],`${API_BASE_URL}/evenements/reservations/${loaderData.idEvent}`);
-  // const { data,error,isPending } = useQueryGet(["resa", "one"],`${api_paths.getReservationById(loaderData.idResa!)}`);
+  // const { data,error,isPending } = useQueryGet(["resa", "one"],`${API_BASE_URL}/evenements/reservations/${loaderData.idEvent}`);
+  const { data,error,isPending } = useQueryGet(["resa", "one"],`${api_paths.getReservationById(loaderData.idResa!)}`);
 
-  const {reservations} = data || {reservations: []};
+  // const {reservations} = data || {reservations: []};
   const { forUser } = useOutletContext<{ forUser: boolean }>();
 
-  const reservation = reservations.find((r:any) => r.reservation_id.toString() === loaderData.idResa);
+  // const reservation = reservations.find((r:any) => r.reservation_id.toString() === loaderData.idResa);
 
-  // const reservation = data;
+  const reservation = data;
+  console.log("Reservation data:", data);
 
   // console.log(reservation);
 

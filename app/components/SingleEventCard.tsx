@@ -226,7 +226,7 @@ export function SingleEventCard({ event, forUser }: { event: evenement; forUser?
 
         {/* === BOUTONS === */}
         {forUser ? (
-          <SimpleGrid cols={{ base: 1, sm: 3 }} mt="xl" spacing="xs">
+          <SimpleGrid cols={{ base: 1, sm: 2 }} mt="xl" spacing="xs">
             <Button
               leftSection={<IconTagPlus size={18} />}
               color="green"
@@ -234,7 +234,7 @@ export function SingleEventCard({ event, forUser }: { event: evenement; forUser?
               loading={mutation.isPending}
               fullWidth
             >
-              Réserver
+              Enregistrer une réservation
             </Button>
             <Button
               leftSection={<IconList size={18} />}
@@ -243,19 +243,10 @@ export function SingleEventCard({ event, forUser }: { event: evenement; forUser?
               to={`/resa/${event.evenement_id}`}
               fullWidth
             >
-              <Text visibleFrom="sm">Réservations</Text>
-              <Text hiddenFrom="sm">Liste</Text>
+              <Text visibleFrom="sm">Liste réservation</Text>
+              {/* <Text hiddenFrom="sm">Liste</Text> */}
             </Button>
-            <Button
-              leftSection={<IconEdit size={18} />}
-              color="gray"
-              component={Link}
-              to={`/edit-event/${event.evenement_id}`}
-              fullWidth
-            >
-              <Text visibleFrom="sm">Modifier</Text>
-              <Text hiddenFrom="sm">Éditer</Text>
-            </Button>
+            
           </SimpleGrid>
         ) : (
           <Button
@@ -266,7 +257,7 @@ export function SingleEventCard({ event, forUser }: { event: evenement; forUser?
             onClick={() => setOpened(true)}
             loading={mutation.isPending}
           >
-            Réserver une place
+            Réserver 
           </Button>
         )}
       </Card>

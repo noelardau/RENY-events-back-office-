@@ -45,6 +45,7 @@ export default function Evenements() {
 
   const { data, isPending, error } = useQueryGet(["evenements"], api_paths.getAllEvenements);
 
+  // console.log(data)
   // === Tous les événements transformés ===
   const allEvents = useMemo(() => {
     if (!data || !Array.isArray(data)) return [];

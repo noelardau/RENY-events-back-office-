@@ -49,8 +49,7 @@ const formatDate = (date: string) =>
 
 export default function ReservationCard({
   reservation,
-  forUser,
-  idEvent,
+  forUser
 }: ReservationCardProps) {
   // === Extraction directe des données ===
   const {
@@ -79,7 +78,7 @@ export default function ReservationCard({
             <Link
               to={
                 forUser
-                  ? `/resa/${idEvent || evenement.id}`
+                  ? `/resa/${evenement.id}`
                   : 'https://renyevents.vercel.app/'
               }
             >

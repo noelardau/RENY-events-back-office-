@@ -2,77 +2,78 @@ import { Button, Container, Flex, Text, Title, Pagination } from "@mantine/core"
 import { Link, useSearchParams } from "react-router";
 import { EventsGrid } from "~/components/EventsGrid";
 import { routeProtection } from "~/utils/routeProtection";
-import event1 from "../assets/Foaran_ny_fetin_ny_reny.jpg";
 import type { Route } from "./+types/evenements";
-import { Id_event_added } from "~/constants/app";
+import { useQueryGet } from "~/hooks/useQueryGet";
+import { api_paths } from "~/constants/api";
+import dayjs from 'dayjs';
+import 'dayjs/locale/fr';
+import srcImg from "../assets/Foaran_ny_fetin_ny_reny.jpg";
+
+dayjs.locale('fr');
 
 const ITEMS_PER_PAGE = 4;
 
-export async function loader({ request }: Route.LoaderArgs) {
+// Loader vide : on gère tout côté client
+export async function loader() {
   routeProtection();
+  return null;
+}
 
-  const url = new URL(request.url);
-  const page = Math.max(1, parseInt(url.searchParams.get("page") || "1", 10));
+export default function Evenements() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const currentPage = Math.max(1, parseInt(searchParams.get("page") || "1", 10));
 
-  // Liste complète des événements
-  const allEvents = [
-    {
-      id: Id_event_added,
-      title: "Foire fête des mères",
-      image: event1,
-      date: "August 18, 2022",
-    },
-    {
-      id:"fec4c386-7722-4fd0-aded-d18a8cbec20e",
-      title: "Best forests to visit in North America",
-      image:
-        "https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80",
-      date: "August 27, 2022",
-    },
-    {
-      id: 4,
-      title: "Hawaii beaches review: better than you think",
-      image:
-        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80",
-      date: "September 9, 2022",
-    },
-    {
-      id: 5,
-      title: "Mountains at night: 12 best locations to enjoy the view",
-      image:
-        "https://images.unsplash.com/photo-1519681393784-d120267933ba?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=720&q=80",
-      date: "September 12, 2022",
-    },
-    // Ajoute d'autres événements ici...
-  ];
+  const { data, isPending, error } = useQueryGet(['evenements'], api_paths.getAllEvenements);
 
+  // === Gestion des états de chargement ===
+  if (isPending) {
+    return (
+      <Container size="md" my="md" py={100} pb={50}>
+        <Text ta="center" c="dimmed">Chargement des événements...</Text>
+      </Container>
+    );
+  }
+
+  if (error || !data || !Array.isArray(data)) {
+    return (
+      <Container size="md" my="md" py={100} pb={50}>
+        <Text ta="center" c="red">Erreur lors du chargement des événements.</Text>
+      </Container>
+    );
+  }
+
+  // === allEvents = données réelles de l'API ===
+  const allEvents = data.map((event: any) => {
+    const debut = dayjs(event.date_debut);
+    const fin = dayjs(event.date_fin);
+    const isSameDay = debut.isSame(fin, 'day');
+
+    const prixMin = event.tarifs?.length > 0
+      ? Math.min(...event.tarifs.map((t: any) => t.prix))
+      : null;
+
+    return {
+      id: event.evenement_id,
+      title: event.titre,
+      image: event.fichiers?.[0]?.fichier_url || srcImg, // fallback si pas d'image
+      date: isSameDay
+        ? debut.format('D MMMM YYYY')
+        : `${debut.format('D')} → ${fin.format('D MMMM YYYY')}`,
+      price: prixMin,
+    };
+  });
+
+  // === Pagination côté client (identique à l'original) ===
   const total = allEvents.length;
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
-  const validPage = Math.min(Math.max(1, page), totalPages);
-
+  const validPage = Math.min(Math.max(1, currentPage), totalPages);
   const start = (validPage - 1) * ITEMS_PER_PAGE;
   const end = start + ITEMS_PER_PAGE;
   const paginatedEvents = allEvents.slice(start, end);
 
-  return {
-    events: paginatedEvents,
-    pagination: {
-      page: validPage,
-      totalPages,
-      total,
-      hasNext: validPage < totalPages,
-      hasPrev: validPage > 1,
-    },
-  };
-}
-
-export default function Evenements({ loaderData }: Route.ComponentProps) {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const currentPage = loaderData.pagination.page;
-  const totalPages = loaderData.pagination.totalPages;
-
   const handlePageChange = (page: number) => {
     setSearchParams({ page: page.toString() });
+    window.scrollTo(0, 0);
   };
 
   return (
@@ -88,13 +89,13 @@ export default function Evenements({ loaderData }: Route.ComponentProps) {
         </Link>
       </Flex>
 
-      <EventsGrid events={loaderData.events} />
+      <EventsGrid events={paginatedEvents} />
 
       {totalPages > 1 && (
         <Flex justify="center" mt="xl">
           <Pagination
             total={totalPages}
-            value={currentPage}
+            value={validPage}
             onChange={handlePageChange}
             withEdges
             color="red"
@@ -105,7 +106,7 @@ export default function Evenements({ loaderData }: Route.ComponentProps) {
       )}
 
       <Text size="sm" c="dimmed" ta="center" mt="sm">
-        Page {currentPage} sur {totalPages} • {loaderData.pagination.total} événement(s)
+        Page {validPage} sur {totalPages} • {total} événement(s)
       </Text>
     </Container>
   );

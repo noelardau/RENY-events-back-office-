@@ -9,8 +9,7 @@ import { useOutletContext } from "react-router";
 
 export function loader({params}: Route.LoaderArgs) {
   return { 
-    idResa:  params.idResa,
-    idEvent: params.eventId
+    idResa:  params.idResa
 
   };
 }
@@ -50,7 +49,7 @@ export default function Resa({loaderData}: Route.ComponentProps) {
   }
   return <Container my="md" size="md" pt={100}>
              
-    <ReservationCard reservation={reservation} forUser={forUser} idEvent={loaderData.idEvent}></ReservationCard>
+    <ReservationCard reservation={reservation} forUser={forUser}></ReservationCard>
      </Container>
   
   

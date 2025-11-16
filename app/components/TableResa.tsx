@@ -77,7 +77,7 @@ export function TableResa({ reservations }: { reservations: reservation[] }) {
             p={isMobile ? 'sm' : 'md'}
             shadow="sm"
             component={Link}
-            to={row.reservation_id}
+            to={`/resa/one/${row.reservation_id}`}
             style={{
               pointerEvents: isValidating ? 'none' : 'auto',
               opacity: isValidating ? 0.7 : 1,

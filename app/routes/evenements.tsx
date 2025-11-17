@@ -20,6 +20,7 @@ import "dayjs/locale/fr";
 import srcImg from "../assets/Foaran_ny_fetin_ny_reny.jpg";
 import { IconSearch, IconX } from "@tabler/icons-react";
 import { useMemo, useEffect, useState } from "react";
+import { base64ToDataUrl } from "~/utils/base64"; 
 
 dayjs.locale("fr");
 const ITEMS_PER_PAGE = 4; // ← 4 événements par page
@@ -45,7 +46,7 @@ export default function Evenements() {
 
   const { data, isPending, error } = useQueryGet(["evenements"], api_paths.getAllEvenements);
 
-  // console.log(data)
+  console.log(data)
   // === Tous les événements transformés ===
   const allEvents = useMemo(() => {
     if (!data || !Array.isArray(data)) return [];
@@ -57,10 +58,13 @@ export default function Evenements() {
         ? Math.min(...event.tarifs.map((t: any) => t.prix))
         : null;
 
+    const binaryData = event.fichiers?.[0]?.donnees_binaire;
+    const imageFromBase64 = base64ToDataUrl(binaryData); 
+
       return {
         id: event.evenement_id,
         title: event.titre,
-        image: event.fichiers?.[0]?.fichier_url || srcImg,
+        image: imageFromBase64 || event.fichiers?.[0]?.fichier_url || srcImg,
         date: isSameDay
           ? debut.format("D MMMM YYYY")
           : `${debut.format("D")} → ${fin.format("D MMMM YYYY")}`,

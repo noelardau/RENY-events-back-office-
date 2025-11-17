@@ -13,6 +13,7 @@ import 'dayjs/locale/fr';
 import event1 from "../assets/Foaran_ny_fetin_ny_reny.jpg";
 import { notifications } from '@mantine/notifications';
 import '@mantine/notifications/styles.css';
+import {base64ToDataUrl} from "~/utils/base64"; 
 
 dayjs.locale('fr');
 
@@ -53,8 +54,11 @@ export function SingleEventCard({ event, forUser }: { event: evenement; forUser?
   const saveResa = (newResa: newReservation) => {
     mutation.mutate(newResa);
   };
+    
+  const binaryData = event.fichiers?.[0]?.donnees_binaire;
+  const imageFromBase64 = base64ToDataUrl(binaryData); 
 
-  const eventImage = event.fichiers?.[0]?.fichier_url || event1;
+  const eventImage = imageFromBase64 || event.fichiers?.[0]?.fichier_url || event1;
   const formatDate = (date: string) => dayjs(date).format('D MMMM YYYY');
   const formatTime = (date: string) => dayjs(date).format('HH:mm');
   const isSameDay = dayjs(event.date_debut).isSame(event.date_fin, 'day');
